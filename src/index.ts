@@ -32,8 +32,7 @@ function toISOString(date: Date) {
 const createWindow = (): void => {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        height: 480,
-        width: 800,
+        kiosk: process.argv.includes("--kiosk"),
         webPreferences: {
             preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
         },
