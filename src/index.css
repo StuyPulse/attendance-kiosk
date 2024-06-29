@@ -1,0 +1,121 @@
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('../assets/OpenSans.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0 1.5rem;
+  background-color: white;
+  color: red;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.title {
+  margin: 1rem 0;
+}
+
+.logo {
+  width: 225px;
+  height: 225px;
+  margin: 0.5rem auto 0;
+}
+
+.date {
+  font-size: 1.25rem;
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+}
+
+.time {
+  font-size: 2rem;
+  color: red;
+  margin-top: 0;
+}
+
+.idNumberInput {
+  width: 75%;
+  font-size: 2rem;
+  margin: 0 auto 0.75rem;
+  padding: 0.25rem;
+  caret-color: transparent;
+  border-radius: 8px;
+  border: 1px solid grey;
+}
+
+.idNumberInput.shake {
+    animation: shake 0.2s ease-in-out 0s 2;
+}
+
+@keyframes shake {
+  0% { margin-left: 0; }
+  25% { margin-left: 1rem; }
+  75% { margin-left: -1rem; }
+  100% { margin-left: 0; }
+}
+
+.idNumberInput:focus {
+  outline-width: 0;
+}
+
+.numpad {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.numpad button {
+  flex-basis: 30%;
+  margin: 5px;
+  height: 3.5rem;
+  font-size: 2rem;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.2s ease-in;
+}
+
+.numpad button:active {
+  background-color: red;
+  color: white;
+  transition: all 0.1s ease-out;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: red;
+  color: white;
+  transition: all 0.25s ease-in;
+}
+
+.footer.ok {
+  background-color: green;
+  transition: all 0.1s ease-out;
+}
+
+.prompt {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+}
