@@ -9,7 +9,7 @@ function isDigit(c: string) {
 }
 
 export default function Form({ onSubmit }: FormProps) {
-    const [idNumber, setIdNumber] = useState("");
+    const [idNumber, setIDNumber] = useState("");
     const [isLastInputFromNumpad, setIsLastInputFromNumpad] = useState(false);
     const [lastShakeTime, setLastShakeTime] = useState(null);
     const [isShaking, setIsShaking] = useState(false);
@@ -20,7 +20,7 @@ export default function Form({ onSubmit }: FormProps) {
         if (value === "submit") {
             onSubmit();
         } else {
-            setIdNumber(idNumber + value);
+            setIDNumber(idNumber + value);
         }
         setIsLastInputFromNumpad(true);
     }
@@ -30,7 +30,7 @@ export default function Form({ onSubmit }: FormProps) {
     }
 
     function handleBackspaceUp() {
-        setIdNumber(idNumber.slice(0, -1));
+        setIDNumber(idNumber.slice(0, -1));
         setBackspaceDownTime(null);
     }
 
@@ -41,14 +41,14 @@ export default function Form({ onSubmit }: FormProps) {
     function handleChangeFromKeyboardInput(e: React.ChangeEvent<HTMLInputElement>) {
         const value = e.target.value;
         if (isLastInputFromNumpad && (e.nativeEvent as InputEvent).inputType === "deleteContentBackward") {
-            setIdNumber("");
+            setIDNumber("");
         } else if (value.length === 0) {
-            setIdNumber("")
+            setIDNumber("")
         } else if (isDigit(value[value.length - 1])) {
             if (isLastInputFromNumpad) {
-                setIdNumber(value[value.length - 1]);
+                setIDNumber(value[value.length - 1]);
             } else {
-                setIdNumber(value);
+                setIDNumber(value);
             }
             setIsLastInputFromNumpad(false);
         }
@@ -60,7 +60,8 @@ export default function Form({ onSubmit }: FormProps) {
             setLastShakeTime(new Date());
             return;
         }
-        setIdNumber("");
+        window.electron.submit(idNumber);
+        setIDNumber("");
         onSubmit();
     }
 
@@ -77,7 +78,7 @@ export default function Form({ onSubmit }: FormProps) {
         if (backspaceDownTime === null) {
             return;
         }
-        const timeout = setTimeout(() => setIdNumber(""), 500);
+        const timeout = setTimeout(() => setIDNumber(""), 500);
         return () => clearTimeout(timeout);
     }, [backspaceDownTime]);
 
