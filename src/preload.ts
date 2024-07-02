@@ -5,11 +5,13 @@ import { contextBridge, ipcRenderer } from "electron";
 declare global {
     interface Window {
         electron: {
-            submit: (idNumber: string) => void;
+            submit: (idNumber: string) => Promise<boolean>;
+            save: () => void;
         }
     }
 }
 
 contextBridge.exposeInMainWorld("electron", {
-    submit: (idNumber: string) => ipcRenderer.send("submit", idNumber)
+    submit: (idNumber: string) => ipcRenderer.invoke("submit", idNumber),
+    save: () => ipcRenderer.send("save"),
 });

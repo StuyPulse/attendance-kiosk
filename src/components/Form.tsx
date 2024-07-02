@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 
 interface FormProps {
-    onSubmit: () => void;
+    onSuccess: () => void;
 }
 
 function isDigit(c: string) {
     return c >= "0" && c <= "9";
 }
 
-export default function Form({ onSubmit }: FormProps) {
+export default function Form({ onSuccess }: FormProps) {
     const [idNumber, setIDNumber] = useState("");
     const [isLastInputFromNumpad, setIsLastInputFromNumpad] = useState(false);
     const [lastShakeTime, setLastShakeTime] = useState(null);
@@ -18,7 +18,7 @@ export default function Form({ onSubmit }: FormProps) {
     function handleNumpadButtonClick(e: React.MouseEvent<HTMLButtonElement>) {
         const value = e.currentTarget.value;
         if (value === "submit") {
-            onSubmit();
+            onSuccess();
         } else {
             setIDNumber(idNumber + value);
         }
@@ -54,15 +54,18 @@ export default function Form({ onSubmit }: FormProps) {
         }
     }
 
-    function handleSubmit(event: React.FormEvent) {
+    async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         if (idNumber.length !== 9 && idNumber.length != 13) {
             setLastShakeTime(new Date());
             return;
         }
-        window.electron.submit(idNumber);
+        const success = await window.electron.submit(idNumber);
+        if (!success) {
+            return;
+        }
         setIDNumber("");
-        onSubmit();
+        onSuccess();
     }
 
     useEffect(() => {
