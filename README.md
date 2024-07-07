@@ -33,15 +33,13 @@ effect automatically, but changes to the main process require restarting the app
 
 ## Building
 
-To build the app for the Raspberry Pi, run:
+To build an `arm64` deb package for the Raspberry Pi, run:
 
 ```bash
 npm run make:pi
 ```
 
-This will build deb packages for the `arm64` and `armv7l` architectures. The `arm64` package is appropriate for the
-Raspberry Pi 5, which is what we use in production. To install the package on the Raspberry Pi, copy the deb file to the
-Raspberry Pi and run:
+To install the package, copy the deb file to the Raspberry Pi and run:
 
 ```bash
 sudo dpkg -i attendance-kiosk_1.0.0_arm64.deb
