@@ -6,19 +6,13 @@ Yokoscan EP8280 barcode scanner. Built with Electron and React.
 
 ![Screenshot of app](docs/images/screenshot.png)
 
-## Exporting attendance report
+## Exporting reports
 
-Attendance data is stored locally on the device in a SQLite database. To export an attendance report for the current
-calendar year, insert a USB drive and triple tap on the 694 logo. This will open a dialog to export a CSV file in the
-following format:
+Attendance data is stored locally on the device in a SQLite database. To export attendance reports, insert a USB drive
+and triple tap on the 694 logo. The following report types are available:
 
-```
-id_number,meetings_attended,total_meetings,percentage
-123456789,10,10,100.00%
-...
-```
-
-A given day counts as a meeting in the report if at least 10 students check in on that day.
+- **Attendance Report** - Number of meetings attended and attendance rate for each student
+- **Meeting Report** - Total unique checkins for each meeting day
 
 ## Development
 
