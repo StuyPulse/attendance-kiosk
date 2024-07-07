@@ -97,8 +97,8 @@ const createWindow = async () => {
                                  OR timestamp LIKE :endDate || '%'
                                GROUP BY date
                                HAVING numCheckins >= :meetingThreshold))
-                         AND timestamp BETWEEN :startDate AND :endDate
-                         OR timestamp LIKE :endDate || '%'
+                         AND (timestamp BETWEEN :startDate AND :endDate
+                              OR timestamp LIKE :endDate || '%')
                        GROUP BY date, idNumber)
                     GROUP BY idNumber
                     ORDER BY numCheckins DESC
