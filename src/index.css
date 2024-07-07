@@ -137,7 +137,7 @@ body, input, button {
   position: absolute;
   inset: 40px;
   border: 1px solid rgb(204, 204, 204);
-  background: rgb(255, 255, 255);
+  background: white;
   overflow: auto;
   border-radius: 8px;
   outline: none;
@@ -157,6 +157,13 @@ body, input, button {
     border: none;
     background: none;
     cursor: pointer;
+    transition: none;
+  }
+
+  .modalCloseButton:active {
+    background: none;
+    color: black;
+    transition: none;
   }
 
   label {
@@ -164,7 +171,17 @@ body, input, button {
   }
 
   input, button {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    border-radius: 8px;
+    border: 1px solid grey;
+    padding: 0.5rem;
+    transition: all 0.2s ease-in;
+  }
+
+  button:active {
+    background-color: red;
+    color: white;
+    transition: all 0.1s ease-out;
   }
 
   .modalRow {
@@ -173,6 +190,14 @@ body, input, button {
     div {
       margin: 0.5rem 0;
     }
+  }
+
+  .dateInput {
+    text-align: center;
+  }
+
+  .dateRange {
+    font-size: 1.25rem;
   }
 
   #meetingThreshold {
@@ -194,4 +219,17 @@ body, input, button {
   .modalSubmitButton {
     margin: 0.5rem;
   }
+}
+
+.ReactModal__Overlay {
+  opacity: 0;
+  transition: opacity 250ms ease-in-out;
+}
+
+.ReactModal__Overlay--after-open {
+  opacity: 1;
+}
+
+.ReactModal__Overlay--before-close {
+  opacity: 0;
 }

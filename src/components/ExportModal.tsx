@@ -57,15 +57,17 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         className="modal"
         isOpen={isOpen}
         onAfterOpen={handleModalOpen}
-        onRequestClose={onClose}>
+        onRequestClose={onClose}
+        closeTimeoutMS={250}>
         <button className="modalCloseButton" onClick={onClose}>✕</button>
         <h2>Export Reports</h2>
         <form onSubmit={handleSubmit}>
             <div className="modalRow">
                 <div><label>Date Range</label></div>
-                <div>
+                <div className="dateRange">
                     <input
                         id="startDate"
+                        className="dateInput"
                         name="startDate"
                         type="date"
                         value={startDate}
@@ -74,6 +76,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     {" – "}
                     <input
                         id="endDate"
+                        className="dateInput"
                         name="endDate"
                         type="date"
                         value={endDate}
@@ -88,7 +91,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     <button
                         className="meetingThresholdButton"
                         type="button"
-                        onClick={decrementMeetingThreshold}>-</button>
+                        onClick={decrementMeetingThreshold}>−</button>
                     <input
                         id="meetingThreshold"
                         name="meetingThreshold"
