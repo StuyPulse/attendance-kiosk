@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Clock from "./Clock";
 import Form from "./Form";
-import logo from "../../assets/Battery-Vector.svg";
+import Logo from "./Logo";
 
 const PROMPT_SCAN = "Scan student ID or enter OSIS — do not check in for others";
 const PROMPT_OK = "OK";
@@ -12,13 +12,6 @@ export default function App() {
 
     function handleSubmit() {
         setLastSubmittedTime(new Date());
-    }
-
-    function handleLogoClick(e: React.MouseEvent<HTMLImageElement>) {
-        if (e.detail !== 3) {
-            return;
-        }
-        window.electron.save();
     }
 
     useEffect(() => {
@@ -35,7 +28,7 @@ export default function App() {
             <h1 className="title">StuyPulse Attendance Kiosk</h1>
             <div className="row">
                 <div className="column">
-                    <img className="logo" src={logo} alt="694" onClick={handleLogoClick} />
+                    <Logo />
                     <Clock />
                 </div>
                 <div className="column">
