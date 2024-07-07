@@ -6,12 +6,16 @@ declare global {
     interface Window {
         electron: {
             submit: (idNumber: string) => Promise<boolean>;
-            exportAttendanceReport: () => void;
+            exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number) => void;
+            exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number) => void;
         }
     }
 }
 
 contextBridge.exposeInMainWorld("electron", {
     submit: (idNumber: string) => ipcRenderer.invoke("submit", idNumber),
-    exportAttendanceReport: () => ipcRenderer.send("exportAttendanceReport"),
+    exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number) =>
+        ipcRenderer.send("exportAttendanceReport", startDate, endDate, meetingThreshold),
+    exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number) =>
+        ipcRenderer.send("exportMeetingReport", startDate, endDate, meetingThreshold),
 });

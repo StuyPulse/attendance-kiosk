@@ -95,22 +95,22 @@ body, input, button {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-}
 
-.numpad button {
-  flex-basis: 30%;
-  margin: 5px;
-  height: 3.5rem;
-  font-size: 2rem;
-  border-radius: 8px;
-  border: none;
-  transition: all 0.2s ease-in;
-}
+  button {
+    flex-basis: 30%;
+    margin: 5px;
+    height: 3.5rem;
+    font-size: 2rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease-in;
+  }
 
-.numpad button:active {
-  background-color: red;
-  color: white;
-  transition: all 0.1s ease-out;
+  button:active {
+    background-color: red;
+    color: white;
+    transition: all 0.1s ease-out;
+  }
 }
 
 .footer {
@@ -131,4 +131,67 @@ body, input, button {
 .prompt {
   font-size: 1.5rem;
   margin: 1rem 0;
+}
+
+.modal {
+  position: absolute;
+  inset: 40px;
+  border: 1px solid rgb(204, 204, 204);
+  background: rgb(255, 255, 255);
+  overflow: auto;
+  border-radius: 8px;
+  outline: none;
+  padding: 20px;
+  color: black;
+
+  h2 {
+    margin: 0;
+  }
+
+  .modalCloseButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+    font-size: 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+  label {
+    font-size: 1.25rem;
+  }
+
+  input, button {
+    font-size: 1.5rem;
+  }
+
+  .modalRow {
+    margin: 1rem 0;
+
+    div {
+      margin: 0.5rem 0;
+    }
+  }
+
+  #meetingThreshold {
+    width: 100px;
+    text-align: center;
+  }
+
+  #meetingThreshold::-webkit-outer-spin-button,
+  #meetingThreshold::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .meetingThresholdButton {
+    width: 50px;
+    margin: 0 0.5rem;
+  }
+
+  .modalSubmitButton {
+    margin: 0.5rem;
+  }
 }

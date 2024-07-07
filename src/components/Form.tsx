@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 interface FormProps {
+    isActive: boolean;
     onSuccess: () => void;
 }
 
@@ -8,7 +9,7 @@ function isDigit(c: string) {
     return c >= "0" && c <= "9";
 }
 
-export default function Form({ onSuccess }: FormProps) {
+export default function Form({ isActive, onSuccess }: FormProps) {
     const [idNumber, setIDNumber] = useState("");
     const [isLastInputFromNumpad, setIsLastInputFromNumpad] = useState(false);
     const [lastShakeTime, setLastShakeTime] = useState(null);
@@ -68,6 +69,12 @@ export default function Form({ onSuccess }: FormProps) {
         onSuccess();
     }
 
+    function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+        if (isActive) {
+            e.target.focus();
+        }
+    }
+
     useEffect(() => {
         if (lastShakeTime === null) {
             return;
@@ -93,7 +100,7 @@ export default function Form({ onSuccess }: FormProps) {
                 className={"idNumberInput" + (isShaking ? " shake" : "")}
                 value={idNumber}
                 onChange={handleChangeFromKeyboardInput}
-                onBlur={(e) => e.target.focus()}
+                onBlur={handleBlur}
                 autoFocus />
         </form>
         <div className="numpad">
