@@ -33,12 +33,6 @@ To build an `arm64` deb package for the Raspberry Pi, run:
 npm run make:pi
 ```
 
-To install the package, copy the deb file to the Raspberry Pi and run:
-
-```bash
-sudo dpkg -i attendance-kiosk_1.0.0_arm64.deb
-```
-
 ## Barcode scanner configuration
 
 The Yokoscan EP8280 scanner is configured by scanning special barcodes which can be found in the
@@ -51,3 +45,50 @@ manual doesn't seem to work, so unfortunately it is necessary to scan the "off" 
 The length range for Code 39 should also be set to a minimum and maximum of 11 characters (the length of an OSIS number
 plus start and stop characters). This configures the scanner to only read the OSIS barcode and not the other barcode on
 the ID card.
+
+## Raspberry Pi setup
+
+Install the latest Raspberry Pi OS onto a microSD card using the Raspberry Pi Imager, then insert the microSD card into
+the Raspberry Pi and boot. Connect to Wi-Fi.
+
+Upgrade and install packages:
+
+```bash
+sudo apt-get update
+sudo apt-get upgrade
+
+# Can't go without it
+sudo apt-get install vim
+
+# For debugging the SQLite database
+sudo apt-get install sqlite3
+```
+
+Add the following to `/boot/firmware/config.txt` to enable charging the real-time clock battery (if applicable):
+
+```
+dtparam=rtc_bbat_vchg=3000000
+```
+
+In the Raspberry Pi Configuration, set up the following:
+
+- Set the hostname to `attendance-kiosk`
+- Set the locale to `en_US.UTF-8`
+- Set the timezone to `America/New_York`
+- Set the keyboard layout to `Generic 104-key PC` with `English (US)`
+- Set the Wi-Fi country to `US`
+
+Install the attendance kiosk package:
+
+```bash
+sudo dpkg -i attendance-kiosk_1.0.0_arm64.deb
+```
+
+Add the following to `~/.config/wayfire.ini` to autostart the attendance kiosk on boot:
+
+```ini
+[autostart]
+kiosk = attendance-kiosk --kiosk
+```
+
+Then reboot the Raspberry Pi for everything to take effect.
