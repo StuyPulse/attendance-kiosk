@@ -109,9 +109,9 @@ export default function Form({ isActive, onSuccess }: FormProps) {
             ))}
             <button
                 value="backspace"
-                onMouseDown={handleBackspaceDown}
-                onMouseUp={handleBackspaceUp}
-                onMouseLeave={handleBackspaceLeave}>⌫</button>
+                onPointerDown={handleBackspaceDown}
+                onPointerUp={handleBackspaceUp}
+                onPointerLeave={handleBackspaceLeave}>⌫</button>
             <button value="0" onClick={handleNumpadButtonClick}>0</button>
             <button value="submit" onClick={handleSubmit}>⏎</button>
         </div>
