@@ -64,7 +64,7 @@ export default function Form({ isActive, onSuccess }: FormProps) {
 
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        if (idNumber.length !== 9 && idNumber.length != 13) {
+        if (idNumber.length !== 9) {
             setLastShakeTime(new Date());
             return;
         }
