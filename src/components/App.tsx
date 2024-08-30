@@ -5,25 +5,52 @@ import Logo from "./Logo";
 import ExportModal from "./ExportModal";
 
 const PROMPT_SCAN = "Scan student ID or enter OSIS — do not check in for others";
+const PROMPT_OTHER_BARCODE = "Wrong barcode — Scan other barcode";
 const PROMPT_OK = "OK";
 
 export default function App() {
-    const [lastSubmittedTime, setLastSubmittedTime] = useState(null);
+    const [lastPromptTime, setLastPromptTime] = useState(null);
     const [promptText, setPromptText] = useState(PROMPT_SCAN);
     const [exportModalOpen, setExportModalOpen] = useState(false);
 
     function handleSubmit() {
-        setLastSubmittedTime(new Date());
+        setPromptText(PROMPT_OK);
+        setLastPromptTime(new Date());
+    }
+
+    function handleWrongBarcode() {
+        setPromptText(PROMPT_OTHER_BARCODE);
+        setLastPromptTime(new Date());
     }
 
     useEffect(() => {
-        if (lastSubmittedTime === null) {
+        if (lastPromptTime === null) {
             return;
         }
-        setPromptText(PROMPT_OK);
-        const timeout = setTimeout(() => setPromptText(PROMPT_SCAN), 1500);
+
+        let promptTime;
+        switch (promptText) {
+            case PROMPT_OK:
+                promptTime = 1500;
+                break;
+            case PROMPT_OTHER_BARCODE:
+                promptTime = 10000;
+                break;
+        }
+
+        const timeout = setTimeout(() => setPromptText(PROMPT_SCAN), promptTime);
         return () => clearTimeout(timeout);
-    }, [lastSubmittedTime]);
+    }, [lastPromptTime]);
+
+    let footerClass = "footer";
+    switch (promptText) {
+        case PROMPT_OK:
+            footerClass += " ok";
+            break;
+        case PROMPT_OTHER_BARCODE:
+            footerClass += " error";
+            break;
+    }
 
     return (
         <>
@@ -34,10 +61,13 @@ export default function App() {
                     <Clock />
                 </div>
                 <div className="column">
-                    <Form isActive={!exportModalOpen} onSuccess={handleSubmit} />
+                    <Form
+                        isActive={!exportModalOpen}
+                        onSuccess={handleSubmit}
+                        onWrongBarcode={handleWrongBarcode} />
                 </div>
             </div>
-            <div className={"footer" + (promptText === PROMPT_OK ? " ok" : "")}>
+            <div className={footerClass}>
                 <p className="prompt">{promptText}</p>
             </div>
             <ExportModal

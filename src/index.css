@@ -128,6 +128,18 @@ body, input, button {
   transition: all 0.1s ease-out;
 }
 
+.footer.error {
+  background-color: red;
+  animation: blinker 1s linear infinite;
+  transition: all 0.1s ease-out;
+}
+
+@keyframes blinker {
+  50% {
+    background-color: #f88;
+  }
+}
+
 .prompt {
   font-size: 1.5rem;
   margin: 1rem 0;

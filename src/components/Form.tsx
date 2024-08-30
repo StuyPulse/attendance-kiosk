@@ -3,13 +3,14 @@ import React, { useEffect, useState } from "react";
 interface FormProps {
     isActive: boolean;
     onSuccess: () => void;
+    onWrongBarcode: () => void;
 }
 
 function isDigit(c: string) {
     return c >= "0" && c <= "9";
 }
 
-export default function Form({ isActive, onSuccess }: FormProps) {
+export default function Form({ isActive, onSuccess, onWrongBarcode }: FormProps) {
     const [idNumber, setIDNumber] = useState("");
     const [isLastInputFromNumpad, setIsLastInputFromNumpad] = useState(false);
     const [lastShakeTime, setLastShakeTime] = useState(null);
@@ -65,6 +66,10 @@ export default function Form({ isActive, onSuccess }: FormProps) {
     async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         if (idNumber.length !== 9) {
+            if (idNumber.length == 13) {
+                setIDNumber("");
+                onWrongBarcode();
+            }
             setLastShakeTime(new Date());
             return;
         }
