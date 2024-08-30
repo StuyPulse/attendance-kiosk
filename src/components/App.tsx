@@ -4,7 +4,7 @@ import Form from "./Form";
 import Logo from "./Logo";
 import ExportModal from "./ExportModal";
 
-const PROMPT_SCAN = "Scan student ID or enter OSIS — do not check in for others";
+const PROMPT_SCAN = "Scan top barcode of ID or enter OSIS — do not check in for others";
 const PROMPT_OTHER_BARCODE = "Wrong barcode — Scan other barcode";
 const PROMPT_OK = "OK";
 
