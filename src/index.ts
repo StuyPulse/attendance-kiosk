@@ -82,26 +82,40 @@ const createWindow = async () => {
             ] = await Promise.all([
                 db.all(`
                     SELECT idNumber,
-                           count(*) AS numCheckins
+                           numCheckins,
+                           numCheckouts,
+                           numCheckouts * 100.0 / numCheckins AS checkoutRatePercent,
+                           totalHours,
+                           totalHours / numCheckouts AS averageHours
                     FROM
-                      (SELECT date(timestamp) AS date,
-                              idNumber
-                       FROM checkin
-                       WHERE date IN
-                           (SELECT date
-                            FROM
-                              (SELECT date(timestamp) AS date,
-                                      count(DISTINCT idNumber) AS numCheckins
-                               FROM checkin
-                               WHERE timestamp BETWEEN :startDate AND :endDate
-                                 OR timestamp LIKE :endDate || '%'
-                               GROUP BY date
-                               HAVING numCheckins >= :meetingThreshold))
-                         AND (timestamp BETWEEN :startDate AND :endDate
-                              OR timestamp LIKE :endDate || '%')
-                       GROUP BY date, idNumber)
-                    GROUP BY idNumber
-                    ORDER BY numCheckins DESC
+                      (SELECT idNumber,
+                              count(*) AS numCheckins,
+                              sum(hasCheckout) AS numCheckouts,
+                              sum(totalHours) AS totalHours
+                       FROM
+                         (SELECT date(timestamp) AS date,
+                                 idNumber,
+                                 (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 AS hasCheckout,
+                                 CASE
+                                     WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 THEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) / 3600.0
+                                     ELSE 0
+                                 END AS totalHours
+                          FROM checkin
+                          WHERE date IN
+                              (SELECT date
+                               FROM
+                                 (SELECT date(timestamp) AS date,
+                                         count(DISTINCT idNumber) AS numCheckins
+                                  FROM checkin
+                                  WHERE timestamp BETWEEN :startDate AND :endDate
+                                    OR timestamp LIKE :endDate || '%'
+                                  GROUP BY date
+                                  HAVING numCheckins >= :meetingThreshold))
+                            AND (timestamp BETWEEN :startDate AND :endDate
+                                 OR timestamp LIKE :endDate || '%')
+                          GROUP BY date, idNumber)
+                       GROUP BY idNumber
+                       ORDER BY numCheckins DESC)
                 `, {
                     ":startDate": startDate,
                     ":endDate": endDate,
@@ -124,11 +138,14 @@ const createWindow = async () => {
                 }),
             ]);
 
-            const header = "id_number,meetings_attended,total_meetings,percentage\n";
+            const header = "id_number,num_checkins,attendance_rate_percent,num_checkouts,checkout_rate_percent,total_hours,average_hours\n";
+            const totalMeetings = totalMeetingsResult.total;
             const data = header + checkinCountsResult.map((row) => {
-                const totalMeetings = totalMeetingsResult.total;
-                const percentage = (row.numCheckins / totalMeetings * 100).toFixed(2);
-                return `${row.idNumber},${row.numCheckins},${totalMeetings},${percentage}%\n`;
+                const attendanceRatePercent = (row.numCheckins / totalMeetings * 100).toFixed(2);
+                const checkoutRatePercent = row.checkoutRatePercent.toFixed(2);
+                const totalHours = row.totalHours.toFixed(2);
+                const averageHours = (row.averageHours || 0).toFixed(2);
+                return `${row.idNumber},${row.numCheckins},${attendanceRatePercent}%,${row.numCheckouts},${checkoutRatePercent}%,${totalHours},${averageHours}\n`;
             }).join("");
 
             await fs.promises.writeFile(result.filePath, data);
