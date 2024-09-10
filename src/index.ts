@@ -200,7 +200,7 @@ const createWindow = async () => {
 
             const header = "date,num_checkins,num_checkouts,checkout_rate_percent\n";
             const data = header + meetingsResult.map((row) =>
-                `${row.date},${row.numCheckins},${row.numCheckouts},${row.checkoutRatePercent.toFixed(2)}\n`
+                `${row.date},${row.numCheckins},${row.numCheckouts},${row.checkoutRatePercent.toFixed(2)}%\n`
             ).join("");
 
             await fs.promises.writeFile(result.filePath, data);
