@@ -157,23 +157,33 @@ const createWindow = async () => {
             }
 
             const meetingsResult = await db.all(`
-                SELECT date(timestamp) AS date,
-                       count(DISTINCT idNumber) AS numCheckins
-                FROM checkin
-                WHERE timestamp BETWEEN :startDate AND :endDate
-                  OR timestamp LIKE :endDate || '%'
-                GROUP BY date
-                HAVING numCheckins >= :meetingThreshold
-                ORDER BY date
+                SELECT date, numCheckins,
+                             numCheckouts,
+                             numCheckouts * 100.0 / numCheckins AS checkoutRatePercent
+                FROM
+                  (SELECT date, count(*) AS numCheckins,
+                                sum(hasCheckout) AS numCheckouts
+                   FROM
+                     (SELECT date(timestamp) AS date,
+                             idNumber,
+                             (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 AS hasCheckout
+                      FROM checkin
+                      WHERE timestamp BETWEEN :startDate AND :endDate
+                        OR timestamp LIKE :endDate || '%'
+                      GROUP BY date,
+                               idNumber)
+                   GROUP BY date
+                   HAVING numCheckins >= :meetingThreshold
+                   ORDER BY date)
             `, {
                 ":startDate": startDate,
                 ":endDate": endDate,
                 ":meetingThreshold": meetingThreshold,
             });
 
-            const header = "date,num_checkins\n";
+            const header = "date,num_checkins,num_checkouts,checkout_rate_percent\n";
             const data = header + meetingsResult.map((row) =>
-                `${row.date},${row.numCheckins}\n`
+                `${row.date},${row.numCheckins},${row.numCheckouts},${row.checkoutRatePercent.toFixed(2)}\n`
             ).join("");
 
             await fs.promises.writeFile(result.filePath, data);
