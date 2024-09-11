@@ -214,6 +214,70 @@ const createWindow = async () => {
         }
     });
 
+    ipcMain.on("exportCheckinData", async (_, startDate, endDate, meetingThreshold) => {
+        try {
+            const dateStr = toISOString(new Date());
+            const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
+            const result = await dialog.showSaveDialog(mainWindow, {
+                title: "Export Checkin Data",
+                defaultPath: `checkins-${dateStrNums}.csv`,
+                filters: [{name: "CSV Files", extensions: ["csv"]}],
+            });
+
+            if (result.canceled) {
+                return;
+            }
+
+            const checkinsResult = await db.all(`
+                SELECT date(timestamp) AS date,
+                       idNumber,
+                       min(timestamp) AS checkinTime,
+                       CASE
+                           WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 THEN max(timestamp)
+                           ELSE NULL
+                       END AS checkoutTime,
+                       CASE
+                           WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 THEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) / 3600.0
+                           ELSE 0
+                       END AS totalHours
+                FROM checkin
+                WHERE date IN
+                    (SELECT date
+                     FROM
+                       (SELECT date(timestamp) AS date,
+                               count(DISTINCT idNumber) AS numCheckins
+                        FROM checkin
+                        WHERE timestamp BETWEEN :startDate AND :endDate
+                          OR timestamp LIKE :endDate || '%'
+                        GROUP BY date
+                        HAVING numCheckins >= :meetingThreshold))
+                  AND (timestamp BETWEEN :startDate AND :endDate
+                       OR timestamp LIKE :endDate || '%')
+                GROUP BY date(timestamp),
+                         idNumber
+                ORDER BY min(timestamp);
+            `, {
+                ":startDate": startDate,
+                ":endDate": endDate,
+                ":meetingThreshold": meetingThreshold,
+            });
+
+            const header = "date,id_number,checkin_time,checkout_time,total_hours\n";
+            const data = header + checkinsResult.map((row) =>
+                `${row.date},${row.idNumber},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours}\n`
+            ).join("");
+
+            await fs.promises.writeFile(result.filePath, data);
+
+            dialog.showMessageBox(mainWindow, {
+                title: "Success",
+                message: "Checkin data exported successfully",
+            });
+        } catch (err) {
+            dialog.showErrorBox("Error", err.toString());
+        }
+    });
+
     mainWindow.setContentSize(800, 480);
 
     // and load the index.html of the app.

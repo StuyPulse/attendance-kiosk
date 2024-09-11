@@ -8,6 +8,7 @@ declare global {
             submit: (idNumber: string) => Promise<boolean>;
             exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number) => void;
             exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number) => void;
+            exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number) => void;
         }
     }
 }
@@ -18,4 +19,6 @@ contextBridge.exposeInMainWorld("electron", {
         ipcRenderer.send("exportAttendanceReport", startDate, endDate, meetingThreshold),
     exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number) =>
         ipcRenderer.send("exportMeetingReport", startDate, endDate, meetingThreshold),
+    exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number) =>
+        ipcRenderer.send("exportCheckinData", startDate, endDate, meetingThreshold),
 });
