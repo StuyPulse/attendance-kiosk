@@ -18,6 +18,9 @@ if (require("electron-squirrel-startup")) {
 
 const DB_PATH = path.join(app.getPath("userData"), "data.db");
 
+// Time between the first and last swipe of a day to consider a student to have checked out
+const MIN_CHECKOUT_TIME_S = 1800;
+
 (async () => {
     const db = await open({
         filename: DB_PATH,
@@ -95,9 +98,9 @@ const createWindow = async () => {
                        FROM
                          (SELECT date(timestamp) AS date,
                                  idNumber,
-                                 (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 AS hasCheckout,
+                                 (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} AS hasCheckout,
                                  CASE
-                                     WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 THEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) / 3600.0
+                                     WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} THEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) / 3600.0
                                      ELSE 0
                                  END AS totalHours
                           FROM checkin
@@ -183,7 +186,7 @@ const createWindow = async () => {
                    FROM
                      (SELECT date(timestamp) AS date,
                              idNumber,
-                             (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 AS hasCheckout
+                             (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} AS hasCheckout
                       FROM checkin
                       WHERE timestamp BETWEEN :startDate AND :endDate
                         OR timestamp LIKE :endDate || '%'
@@ -233,11 +236,11 @@ const createWindow = async () => {
                        idNumber,
                        min(timestamp) AS checkinTime,
                        CASE
-                           WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 THEN max(timestamp)
+                           WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} THEN max(timestamp)
                            ELSE NULL
                        END AS checkoutTime,
                        CASE
-                           WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= 600 THEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) / 3600.0
+                           WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} THEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) / 3600.0
                            ELSE 0
                        END AS totalHours
                 FROM checkin
