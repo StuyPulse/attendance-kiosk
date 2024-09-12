@@ -1,8 +1,8 @@
 StuyPulse Attendance Kiosk
 ==========================
 
-Attendance kiosk for robotics meetings. Designed for the Raspberry Pi 7" touchscreen (800x480 resolution) and the
-Yokoscan EP8280 barcode scanner. Built with Electron and React.
+Attendance kiosk for robotics meetings. Designed for the Raspberry Pi 7" touchscreen (800x480 resolution). Built with
+Electron and React.
 
 ![Screenshot of app](docs/images/screenshot.png)
 
@@ -11,8 +11,19 @@ Yokoscan EP8280 barcode scanner. Built with Electron and React.
 Attendance data is stored locally on the device in a SQLite database. To export attendance reports, insert a USB drive
 and triple tap on the 694 logo. The following report types are available:
 
-- **Attendance Report** - Number of meetings attended and attendance rate for each student
-- **Meeting Report** - Total unique checkins for each meeting day
+- **Attendance Report** - Number of meetings attended, attendance rate, number of checkouts, checkout rate, and average
+  and total time spent at meetings for each student
+- **Meeting Report** - Total unique checkins and checkout rate for each meeting day
+- **Checkin Data** - Checkin/checkout times and total time spent at meeting for each student on each meeting day
+  (basically raw swipe data grouped by student and day)
+
+Each of these reports is filtered by the specified date range and meeting threshold. The meeting threshold is the number
+of unique checkins required for a given day to be considered a meeting. This prevents presumably unofficial meetings
+from skewing the statistics.
+
+A student counts as having checked out on a given day if their first and last swipes on that day are more than 30
+minutes apart. This is to prevent multiple checkins in quick succession but no actual checkout (e.g. if the student
+forgot if they already swiped in and swiped in again) from bringing down the student's average time spent at meetings.
 
 ## Development
 
@@ -34,6 +45,9 @@ npm run make:pi
 ```
 
 ## Barcode scanner configuration
+
+This app can be used with any barcode scanner in keyboard emulation mode. The following instructions are for the
+Yokoscan EP8280, which we no longer use, but the documentation is left here for historical reference.
 
 The Yokoscan EP8280 scanner is configured by scanning special barcodes which can be found in the
 [user manual](docs/EP8280_NFC_User_Guide.pdf).
