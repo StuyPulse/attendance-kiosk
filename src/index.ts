@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 
+import { WebClient } from "@slack/web-api";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 
@@ -37,6 +38,18 @@ function toISOString(date: Date) {
     return (new Date(date.getTime() - tzOffset)).toISOString().slice(0, -1);
 }
 
+async function sendReportToSlack(slackClient: WebClient, data: string, filename: string, name: string) {
+    const conversation = await slackClient.conversations.open({
+        users: process.env.SLACK_EXPORT_USER_ID,
+    });
+    await slackClient.filesUploadV2({
+        channel_id: conversation.channel.id,
+        initial_comment: `${name} exported by attendance kiosk`,
+        file: Buffer.from(data, "utf-8"),
+        filename: filename,
+    });
+}
+
 const createWindow = async () => {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
@@ -50,6 +63,8 @@ const createWindow = async () => {
         filename: DB_PATH,
         driver: sqlite3.cached.Database,
     });
+
+    const slackClient = new WebClient(process.env.SLACK_TOKEN);
 
     ipcMain.handle("submit", async (_, idNumber) => {
         try {
@@ -65,18 +80,25 @@ const createWindow = async () => {
         }
     });
 
-    ipcMain.on("exportAttendanceReport", async (_, startDate, endDate, meetingThreshold) => {
+    ipcMain.on("exportAttendanceReport", async (_, startDate, endDate, meetingThreshold, sendToSlack) => {
         try {
             const dateStr = toISOString(new Date());
             const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
-            const result = await dialog.showSaveDialog(mainWindow, {
-                title: "Export Attendance Report",
-                defaultPath: `attendance-report-${dateStrNums}.csv`,
-                filters: [{name: "CSV Files", extensions: ["csv"]}],
-            });
+            const filename = `attendance-report-${dateStrNums}.csv`;
 
-            if (result.canceled) {
-                return;
+            let filePath;
+            if (!sendToSlack) {
+                const result = await dialog.showSaveDialog(mainWindow, {
+                    title: "Export Attendance Report",
+                    defaultPath: filename,
+                    filters: [{name: "CSV Files", extensions: ["csv"]}],
+                });
+
+                if (result.canceled) {
+                    return;
+                }
+
+                filePath = result.filePath;
             }
 
             const [
@@ -151,9 +173,13 @@ const createWindow = async () => {
                 return `${row.idNumber},${row.numCheckins},${attendanceRatePercent}%,${row.numCheckouts},${checkoutRatePercent}%,${totalHours},${averageHours}\n`;
             }).join("");
 
-            await fs.promises.writeFile(result.filePath, data);
+            if (sendToSlack) {
+                await sendReportToSlack(slackClient, data, filename, "Attendance report");
+            } else {
+                await fs.promises.writeFile(filePath, data);
+            }
 
-            dialog.showMessageBox(mainWindow, {
+            await dialog.showMessageBox(mainWindow, {
                 title: "Success",
                 message: "Attendance report exported successfully",
             });
@@ -162,18 +188,25 @@ const createWindow = async () => {
         }
     });
 
-    ipcMain.on("exportMeetingReport", async (_, startDate, endDate, meetingThreshold) => {
+    ipcMain.on("exportMeetingReport", async (_, startDate, endDate, meetingThreshold, sendToSlack) => {
         try {
             const dateStr = toISOString(new Date());
             const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
-            const result = await dialog.showSaveDialog(mainWindow, {
-                title: "Export Meeting Report",
-                defaultPath: `meeting-report-${dateStrNums}.csv`,
-                filters: [{name: "CSV Files", extensions: ["csv"]}],
-            });
+            const filename = `meeting-report-${dateStrNums}.csv`;
 
-            if (result.canceled) {
-                return;
+            let filePath;
+            if (!sendToSlack) {
+                const result = await dialog.showSaveDialog(mainWindow, {
+                    title: "Export Meeting Report",
+                    defaultPath: filename,
+                    filters: [{name: "CSV Files", extensions: ["csv"]}],
+                });
+
+                if (result.canceled) {
+                    return;
+                }
+
+                filePath = result.filePath;
             }
 
             const meetingsResult = await db.all(`
@@ -206,9 +239,13 @@ const createWindow = async () => {
                 `${row.date},${row.numCheckins},${row.numCheckouts},${row.checkoutRatePercent.toFixed(2)}%\n`
             ).join("");
 
-            await fs.promises.writeFile(result.filePath, data);
+            if (sendToSlack) {
+                await sendReportToSlack(slackClient, data, filename, "Meeting report");
+            } else {
+                await fs.promises.writeFile(filePath, data);
+            }
 
-            dialog.showMessageBox(mainWindow, {
+            await dialog.showMessageBox(mainWindow, {
                 title: "Success",
                 message: "Meeting report exported successfully",
             });
@@ -217,18 +254,25 @@ const createWindow = async () => {
         }
     });
 
-    ipcMain.on("exportCheckinData", async (_, startDate, endDate, meetingThreshold) => {
+    ipcMain.on("exportCheckinData", async (_, startDate, endDate, meetingThreshold, sendToSlack) => {
         try {
             const dateStr = toISOString(new Date());
             const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
-            const result = await dialog.showSaveDialog(mainWindow, {
-                title: "Export Checkin Data",
-                defaultPath: `checkins-${dateStrNums}.csv`,
-                filters: [{name: "CSV Files", extensions: ["csv"]}],
-            });
+            const filename = `checkins-${dateStrNums}.csv`;
 
-            if (result.canceled) {
-                return;
+            let filePath;
+            if (!sendToSlack) {
+                const result = await dialog.showSaveDialog(mainWindow, {
+                    title: "Export Checkin Data",
+                    defaultPath: filename,
+                    filters: [{name: "CSV Files", extensions: ["csv"]}],
+                });
+
+                if (result.canceled) {
+                    return;
+                }
+
+                filePath = result.filePath;
             }
 
             const checkinsResult = await db.all(`
@@ -270,9 +314,13 @@ const createWindow = async () => {
                 `${row.date},${row.idNumber},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours}\n`
             ).join("");
 
-            await fs.promises.writeFile(result.filePath, data);
+            if (sendToSlack) {
+                await sendReportToSlack(slackClient, data, filename, "Checkin data");
+            } else {
+                await fs.promises.writeFile(filePath, data);
+            }
 
-            dialog.showMessageBox(mainWindow, {
+            await dialog.showMessageBox(mainWindow, {
                 title: "Success",
                 message: "Checkin data exported successfully",
             });

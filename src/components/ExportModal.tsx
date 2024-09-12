@@ -18,6 +18,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     const [startDate, setStartDate] = useState(defaultStartDate);
     const [endDate, setEndDate] = useState(defaultEndDate);
     const [meetingThreshold, setMeetingThreshold] = useState(DEFAULT_MEETING_THRESHOLD);
+    const [sendToSlack, setSendToSlack] = useState(false);
 
     function handleModalOpen() {
         const tzOffset = (new Date()).getTimezoneOffset() * 60000;
@@ -28,6 +29,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         setStartDate(defaultStartDate);
         setEndDate(defaultEndDate);
         setMeetingThreshold(DEFAULT_MEETING_THRESHOLD);
+        setSendToSlack(false);
     }
 
     function handleMeetingThresholdChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -47,11 +49,11 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         const submitter = (e.nativeEvent as SubmitEvent).submitter;
         const buttonName = (submitter as HTMLButtonElement).name;
         if (buttonName === "exportAttendanceReport") {
-            window.electron.exportAttendanceReport(startDate, endDate, Number(meetingThreshold));
+            window.electron.exportAttendanceReport(startDate, endDate, Number(meetingThreshold), sendToSlack);
         } else if (buttonName === "exportMeetingReport") {
-            window.electron.exportMeetingReport(startDate, endDate, Number(meetingThreshold));
+            window.electron.exportMeetingReport(startDate, endDate, Number(meetingThreshold), sendToSlack);
         } else if (buttonName === "exportCheckinData") {
-            window.electron.exportCheckinData(startDate, endDate, Number(meetingThreshold));
+            window.electron.exportCheckinData(startDate, endDate, Number(meetingThreshold), sendToSlack);
         }
     }
 
@@ -109,18 +111,34 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                 </div>
             </div>
             <div className="modalRow">
+                <input
+                    type="radio"
+                    id="exportToFile"
+                    name="exportOption"
+                    checked={!sendToSlack}
+                    onClick={() => setSendToSlack(false)} />
+                <label htmlFor="exportToFile">Export to USB drive</label>
+                <input
+                    type="radio"
+                    id="sendToSlack"
+                    name="exportOption"
+                    checked={sendToSlack}
+                    onClick={() => setSendToSlack(true)} />
+                <label htmlFor="sendToSlack">Send to Kevin on Slack</label>
+            </div>
+            <div className="modalRow">
                 <button
                     name="exportAttendanceReport"
                     className="modalSubmitButton"
-                    type="submit">Export Attendance Report</button>
+                    type="submit">Attendance Report</button>
                 <button
                     name="exportMeetingReport"
                     className="modalSubmitButton"
-                    type="submit">Export Meeting Report</button>
+                    type="submit">Meeting Report</button>
                 <button
                     name="exportCheckinData"
                     className="modalSubmitButton"
-                    type="submit">Export Checkin Data</button>
+                    type="submit">Checkin Data</button>
             </div>
         </form>
     </Modal>;

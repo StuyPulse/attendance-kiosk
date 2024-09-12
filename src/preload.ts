@@ -6,19 +6,19 @@ declare global {
     interface Window {
         electron: {
             submit: (idNumber: string) => Promise<boolean>;
-            exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number) => void;
-            exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number) => void;
-            exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number) => void;
+            exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
+            exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
+            exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
         }
     }
 }
 
 contextBridge.exposeInMainWorld("electron", {
     submit: (idNumber: string) => ipcRenderer.invoke("submit", idNumber),
-    exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number) =>
-        ipcRenderer.send("exportAttendanceReport", startDate, endDate, meetingThreshold),
-    exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number) =>
-        ipcRenderer.send("exportMeetingReport", startDate, endDate, meetingThreshold),
-    exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number) =>
-        ipcRenderer.send("exportCheckinData", startDate, endDate, meetingThreshold),
+    exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) =>
+        ipcRenderer.send("exportAttendanceReport", startDate, endDate, meetingThreshold, sendToSlack),
+    exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) =>
+        ipcRenderer.send("exportMeetingReport", startDate, endDate, meetingThreshold, sendToSlack),
+    exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) =>
+        ipcRenderer.send("exportCheckinData", startDate, endDate, meetingThreshold, sendToSlack),
 });
