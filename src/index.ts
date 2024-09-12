@@ -311,7 +311,7 @@ const createWindow = async () => {
 
             const header = "date,id_number,checkin_time,checkout_time,total_hours\n";
             const data = header + checkinsResult.map((row) =>
-                `${row.date},${row.idNumber},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours}\n`
+                `${row.date},${row.idNumber},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours.toFixed(2)}\n`
             ).join("");
 
             if (sendToSlack) {
