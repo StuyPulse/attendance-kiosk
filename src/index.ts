@@ -38,6 +38,26 @@ function toISOString(date: Date) {
     return (new Date(date.getTime() - tzOffset)).toISOString().slice(0, -1);
 }
 
+function getFilename(prefix: string) {
+    const dateStr = toISOString(new Date());
+    const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
+    return `${prefix}-${dateStrNums}.csv`;
+}
+
+async function promptForFilePath(defaultFilename: string, title: string) {
+    const result = await dialog.showSaveDialog({
+        title: title,
+        defaultPath: defaultFilename,
+        filters: [{name: "CSV Files", extensions: ["csv"]}],
+    });
+
+    if (result.canceled) {
+        return null;
+    }
+
+    return result.filePath;
+}
+
 async function sendReportToSlack(slackClient: WebClient, data: string, filename: string, name: string) {
     const conversation = await slackClient.conversations.open({
         users: process.env.SLACK_EXPORT_USER_ID,
@@ -82,23 +102,11 @@ const createWindow = async () => {
 
     ipcMain.on("exportAttendanceReport", async (_, startDate, endDate, meetingThreshold, sendToSlack) => {
         try {
-            const dateStr = toISOString(new Date());
-            const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
-            const filename = `attendance-report-${dateStrNums}.csv`;
+            const filename = getFilename("attendance-report");
+            const filePath = sendToSlack ? null : await promptForFilePath(filename, "Export Attendance Report");
 
-            let filePath;
-            if (!sendToSlack) {
-                const result = await dialog.showSaveDialog(mainWindow, {
-                    title: "Export Attendance Report",
-                    defaultPath: filename,
-                    filters: [{name: "CSV Files", extensions: ["csv"]}],
-                });
-
-                if (result.canceled) {
-                    return;
-                }
-
-                filePath = result.filePath;
+            if (!sendToSlack && filePath === null) {
+                return;
             }
 
             const [
@@ -190,23 +198,11 @@ const createWindow = async () => {
 
     ipcMain.on("exportMeetingReport", async (_, startDate, endDate, meetingThreshold, sendToSlack) => {
         try {
-            const dateStr = toISOString(new Date());
-            const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
-            const filename = `meeting-report-${dateStrNums}.csv`;
+            const filename = getFilename("meeting-report");
+            const filePath = sendToSlack ? null : await promptForFilePath(filename, "Export Meeting Report");
 
-            let filePath;
-            if (!sendToSlack) {
-                const result = await dialog.showSaveDialog(mainWindow, {
-                    title: "Export Meeting Report",
-                    defaultPath: filename,
-                    filters: [{name: "CSV Files", extensions: ["csv"]}],
-                });
-
-                if (result.canceled) {
-                    return;
-                }
-
-                filePath = result.filePath;
+            if (!sendToSlack && filePath === null) {
+                return;
             }
 
             const meetingsResult = await db.all(`
@@ -256,23 +252,11 @@ const createWindow = async () => {
 
     ipcMain.on("exportCheckinData", async (_, startDate, endDate, meetingThreshold, sendToSlack) => {
         try {
-            const dateStr = toISOString(new Date());
-            const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
-            const filename = `checkins-${dateStrNums}.csv`;
+            const filename = getFilename("checkins");
+            const filePath = sendToSlack ? null : await promptForFilePath(filename, "Export Checkin Data");
 
-            let filePath;
-            if (!sendToSlack) {
-                const result = await dialog.showSaveDialog(mainWindow, {
-                    title: "Export Checkin Data",
-                    defaultPath: filename,
-                    filters: [{name: "CSV Files", extensions: ["csv"]}],
-                });
-
-                if (result.canceled) {
-                    return;
-                }
-
-                filePath = result.filePath;
+            if (!sendToSlack && filePath === null) {
+                return;
             }
 
             const checkinsResult = await db.all(`
@@ -302,7 +286,7 @@ const createWindow = async () => {
                        OR timestamp LIKE :endDate || '%')
                 GROUP BY date(timestamp),
                          idNumber
-                ORDER BY min(timestamp);
+                ORDER BY min(timestamp)
             `, {
                 ":startDate": startDate,
                 ":endDate": endDate,
