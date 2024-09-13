@@ -98,11 +98,12 @@ Install the attendance kiosk package:
 sudo dpkg -i attendance-kiosk_1.0.0_arm64.deb
 ```
 
-Add the following to `~/.config/wayfire.ini` to autostart the attendance kiosk on boot:
+Add the following to `~/.config/wayfire.ini` to autostart the attendance kiosk on boot, filling in the environment
+variables accordingly:
 
 ```ini
 [autostart]
-kiosk = attendance-kiosk --kiosk
+kiosk = SLACK_TOKEN="<slack token>" SLACK_EXPORT_USER_ID="<user ID>" attendance-kiosk --kiosk
 ```
 
 Then reboot the Raspberry Pi for everything to take effect.
