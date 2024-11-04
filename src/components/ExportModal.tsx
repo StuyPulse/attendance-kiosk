@@ -19,6 +19,8 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     const [endDate, setEndDate] = useState(defaultEndDate);
     const [meetingThreshold, setMeetingThreshold] = useState(DEFAULT_MEETING_THRESHOLD);
     const [sendToSlack, setSendToSlack] = useState(false);
+    const [numCheckinsToday, setNumCheckinsToday] = useState(0);
+    const [numCheckoutsToday, setNumCheckoutsToday] = useState(0);
 
     function handleModalOpen() {
         const tzOffset = (new Date()).getTimezoneOffset() * 60000;
@@ -30,6 +32,11 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         setEndDate(defaultEndDate);
         setMeetingThreshold(DEFAULT_MEETING_THRESHOLD);
         setSendToSlack(false);
+
+        window.electron.getTodaysStats().then(({ numCheckins, numCheckouts }) => {
+            setNumCheckinsToday(numCheckins);
+            setNumCheckoutsToday(numCheckouts);
+        });
     }
 
     function handleMeetingThresholdChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -65,6 +72,10 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         closeTimeoutMS={250}>
         <button className="modalCloseButton" onClick={onClose}>✕</button>
         <h2>Export Reports</h2>
+        <div className="modalRow">
+            <span className="todayStats">Checkins today: {numCheckinsToday}</span>
+            <span className="todayStats">Checkouts today: {numCheckoutsToday}</span>
+        </div>
         <form onSubmit={handleSubmit}>
             <div className="modalRow">
                 <div><label>Date Range</label></div>

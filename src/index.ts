@@ -100,6 +100,30 @@ const createWindow = async () => {
         }
     });
 
+    ipcMain.handle("getTodaysStats", async () => {
+        try {
+            const date = toISOString(new Date()).split("T")[0];
+            const result = await db.get(`
+                SELECT count(*) AS numCheckins,
+                       sum(hasCheckout) AS numCheckouts
+                FROM
+                  (SELECT date(timestamp) AS date,
+                          idNumber,
+                          (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} AS hasCheckout
+                   FROM checkin
+                   WHERE date(timestamp) = :date)
+            `, {
+                ":date": date,
+            });
+            return {
+                numCheckins: result.numCheckins,
+                numCheckouts: result.numCheckouts,
+            }
+        } catch (err) {
+            dialog.showErrorBox("Error", err.toString());
+        }
+    });
+
     ipcMain.on("exportAttendanceReport", async (_, startDate, endDate, meetingThreshold, sendToSlack) => {
         try {
             const filename = getFilename("attendance-report");

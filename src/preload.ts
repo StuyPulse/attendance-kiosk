@@ -6,6 +6,7 @@ declare global {
     interface Window {
         electron: {
             submit: (idNumber: string) => Promise<boolean>;
+            getTodaysStats: () => Promise<{ numCheckins: number, numCheckouts: number }>;
             exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
             exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
             exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
@@ -15,6 +16,7 @@ declare global {
 
 contextBridge.exposeInMainWorld("electron", {
     submit: (idNumber: string) => ipcRenderer.invoke("submit", idNumber),
+    getTodaysStats: () => ipcRenderer.invoke("getTodaysStats"),
     exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) =>
         ipcRenderer.send("exportAttendanceReport", startDate, endDate, meetingThreshold, sendToSlack),
     exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) =>
