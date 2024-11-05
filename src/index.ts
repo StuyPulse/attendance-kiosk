@@ -111,7 +111,8 @@ const createWindow = async () => {
                           idNumber,
                           (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} AS hasCheckout
                    FROM checkin
-                   WHERE date(timestamp) = :date)
+                   WHERE date(timestamp) = :date
+                   GROUP BY idNumber)
             `, {
                 ":date": date,
             });
