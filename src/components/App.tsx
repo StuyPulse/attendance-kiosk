@@ -13,8 +13,12 @@ export default function App() {
     const [promptText, setPromptText] = useState(PROMPT_SCAN);
     const [exportModalOpen, setExportModalOpen] = useState(false);
 
-    function handleSubmit() {
-        setPromptText(PROMPT_OK);
+    function handleSubmit(name: string) {
+        let text = PROMPT_OK;
+        if (name) {
+            text += ` — ${name}`;
+        }
+        setPromptText(text);
         setLastPromptTime(new Date());
     }
 
@@ -29,13 +33,10 @@ export default function App() {
         }
 
         let promptTime;
-        switch (promptText) {
-            case PROMPT_OK:
-                promptTime = 1500;
-                break;
-            case PROMPT_OTHER_BARCODE:
-                promptTime = 10000;
-                break;
+        if (promptText.startsWith(PROMPT_OK)) {
+            promptTime = 1500;
+        } else if (promptText === PROMPT_OTHER_BARCODE) {
+            promptTime = 10000;
         }
 
         const timeout = setTimeout(() => setPromptText(PROMPT_SCAN), promptTime);
@@ -43,13 +44,10 @@ export default function App() {
     }, [lastPromptTime]);
 
     let footerClass = "footer";
-    switch (promptText) {
-        case PROMPT_OK:
-            footerClass += " ok";
-            break;
-        case PROMPT_OTHER_BARCODE:
-            footerClass += " error";
-            break;
+    if (promptText.startsWith(PROMPT_OK)) {
+        footerClass += " ok";
+    } else if (promptText === PROMPT_OTHER_BARCODE) {
+        footerClass += " error";
     }
 
     return (

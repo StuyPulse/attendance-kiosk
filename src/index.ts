@@ -90,15 +90,22 @@ const createWindow = async () => {
 
     ipcMain.handle("submit", async (_, idNumber) => {
         try {
-            await db.run(
-                "INSERT INTO checkin (timestamp, idNumber) VALUES (?, ?)",
-                toISOString(new Date()),
-                idNumber,
-            );
-            return true;
+            const [, student] = await Promise.all([
+                db.run(
+                    "INSERT INTO checkin (timestamp, idNumber) VALUES (?, ?)",
+                    toISOString(new Date()),
+                    idNumber,
+                ),
+                db.get(
+                    "SELECT * FROM student WHERE idNumber = ?",
+                    idNumber,
+                ),
+            ]);
+            const name = student ? `${student.firstName} ${student.lastName}` : null;
+            return {success: true, name: name};
         } catch (err) {
             dialog.showErrorBox("Error", err.toString());
-            return false;
+            return {success: false};
         }
     });
 

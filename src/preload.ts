@@ -5,7 +5,7 @@ import { contextBridge, ipcRenderer } from "electron";
 declare global {
     interface Window {
         electron: {
-            submit: (idNumber: string) => Promise<boolean>;
+            submit: (idNumber: string) => Promise<{ success: boolean, name?: string }>;
             getTodaysStats: () => Promise<{ numCheckins: number, numCheckouts: number }>;
             exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
             exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;

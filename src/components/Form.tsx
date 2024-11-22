@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 interface FormProps {
     isActive: boolean;
-    onSuccess: () => void;
+    onSuccess: (name: string) => void;
     onWrongBarcode: () => void;
 }
 
@@ -20,11 +20,7 @@ export default function Form({ isActive, onSuccess, onWrongBarcode }: FormProps)
 
     function handleNumpadButtonClick(e: React.MouseEvent<HTMLButtonElement>) {
         const value = e.currentTarget.value;
-        if (value === "submit") {
-            onSuccess();
-        } else {
-            setIDNumber(idNumber + value);
-        }
+        setIDNumber(idNumber + value);
         setIsLastInputFromNumpad(true);
     }
 
@@ -73,12 +69,12 @@ export default function Form({ isActive, onSuccess, onWrongBarcode }: FormProps)
             setLastShakeTime(new Date());
             return;
         }
-        const success = await window.electron.submit(idNumber);
-        if (!success) {
+        const response = await window.electron.submit(idNumber);
+        if (!response.success) {
             return;
         }
         setIDNumber("");
-        onSuccess();
+        onSuccess(response.name);
     }
 
     function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
