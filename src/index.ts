@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 
+import { parse } from "csv-parse";
 import { WebClient } from "@slack/web-api";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
@@ -30,6 +31,7 @@ const MIN_CHECKOUT_TIME_S = 1800;
     await db.exec("CREATE TABLE IF NOT EXISTS checkin (timestamp TEXT, idNumber TEXT)");
     await db.exec("CREATE INDEX IF NOT EXISTS timestampIndex ON checkin (timestamp COLLATE NOCASE)");
     await db.exec("CREATE INDEX IF NOT EXISTS idNumberIndex ON checkin (idNumber)");
+    await db.exec("CREATE TABLE IF NOT EXISTS student (idNumber TEXT PRIMARY KEY, firstName TEXT, lastName TEXT)");
 })();
 
 // Convert a Date object to an ISO 8601 string in the local timezone
@@ -139,7 +141,9 @@ const createWindow = async () => {
                 totalMeetingsResult,
             ] = await Promise.all([
                 db.all(`
-                    SELECT idNumber,
+                    SELECT t.idNumber,
+                           ifnull(student.firstName, '') AS firstName,
+                           ifnull(student.lastName, '') AS lastName,
                            numCheckins,
                            numCheckouts,
                            numCheckouts * 100.0 / numCheckins AS checkoutRatePercent,
@@ -173,7 +177,8 @@ const createWindow = async () => {
                                  OR timestamp LIKE :endDate || '%')
                           GROUP BY date, idNumber)
                        GROUP BY idNumber
-                       ORDER BY numCheckins DESC)
+                       ORDER BY numCheckins DESC) t
+                    LEFT JOIN student ON t.idNumber = student.idNumber
                 `, {
                     ":startDate": startDate,
                     ":endDate": endDate,
@@ -196,14 +201,14 @@ const createWindow = async () => {
                 }),
             ]);
 
-            const header = "id_number,num_checkins,attendance_rate_percent,num_checkouts,checkout_rate_percent,total_hours,average_hours\n";
+            const header = "id_number,first_name,last_name,num_checkins,attendance_rate_percent,num_checkouts,checkout_rate_percent,total_hours,average_hours\n";
             const totalMeetings = totalMeetingsResult.total;
             const data = header + checkinCountsResult.map((row) => {
                 const attendanceRatePercent = (row.numCheckins / totalMeetings * 100).toFixed(2);
                 const checkoutRatePercent = row.checkoutRatePercent.toFixed(2);
                 const totalHours = row.totalHours.toFixed(2);
                 const averageHours = (row.averageHours || 0).toFixed(2);
-                return `${row.idNumber},${row.numCheckins},${attendanceRatePercent}%,${row.numCheckouts},${checkoutRatePercent}%,${totalHours},${averageHours}\n`;
+                return `${row.idNumber},${row.firstName},${row.lastName},${row.numCheckins},${attendanceRatePercent}%,${row.numCheckouts},${checkoutRatePercent}%,${totalHours},${averageHours}\n`;
             }).join("");
 
             if (sendToSlack) {
@@ -286,7 +291,9 @@ const createWindow = async () => {
 
             const checkinsResult = await db.all(`
                 SELECT date(timestamp) AS date,
-                       idNumber,
+                       checkin.idNumber,
+                       ifnull(student.firstName, '') AS firstName,
+                       ifnull(student.lastName, '') AS lastName,
                        min(timestamp) AS checkinTime,
                        CASE
                            WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} THEN max(timestamp)
@@ -297,6 +304,7 @@ const createWindow = async () => {
                            ELSE 0
                        END AS totalHours
                 FROM checkin
+                LEFT JOIN student ON checkin.idNumber = student.idNumber
                 WHERE date IN
                     (SELECT date
                      FROM
@@ -310,7 +318,7 @@ const createWindow = async () => {
                   AND (timestamp BETWEEN :startDate AND :endDate
                        OR timestamp LIKE :endDate || '%')
                 GROUP BY date(timestamp),
-                         idNumber
+                         checkin.idNumber
                 ORDER BY min(timestamp)
             `, {
                 ":startDate": startDate,
@@ -318,9 +326,9 @@ const createWindow = async () => {
                 ":meetingThreshold": meetingThreshold,
             });
 
-            const header = "date,id_number,checkin_time,checkout_time,total_hours\n";
+            const header = "date,id_number,first_name,last_name,checkin_time,checkout_time,total_hours\n";
             const data = header + checkinsResult.map((row) =>
-                `${row.date},${row.idNumber},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours.toFixed(2)}\n`
+                `${row.date},${row.idNumber},${row.firstName},${row.lastName},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours.toFixed(2)}\n`
             ).join("");
 
             if (sendToSlack) {
@@ -332,6 +340,58 @@ const createWindow = async () => {
             await dialog.showMessageBox(mainWindow, {
                 title: "Success",
                 message: "Checkin data exported successfully",
+            });
+        } catch (err) {
+            dialog.showErrorBox("Error", err.toString());
+        }
+    });
+
+    ipcMain.on("importStudents", async () => {
+        try {
+            const result = await dialog.showOpenDialog({
+                title: "Import Students",
+                filters: [{name: "CSV Files", extensions: ["csv"]}],
+                properties: ["openFile"],
+            });
+
+            if (result.canceled) {
+                return;
+            }
+
+            const filePath = result.filePaths[0];
+            const parser = fs
+                .createReadStream(filePath)
+                .pipe(parse({columns: true}));
+
+            let numSuccess = 0;
+            let numFailure = 0;
+            await db.run("BEGIN TRANSACTION");
+            for await (const record of parser) {
+                const idNumber = record.id_number.trim();
+                const firstName = record.first_name.trim();
+                const lastName = record.last_name.trim();
+
+                if (idNumber.length !== 9 || !firstName || !lastName) {
+                    numFailure++;
+                    continue;
+                }
+
+                await db.run(`INSERT OR REPLACE INTO student (idNumber, firstName, lastName) VALUES (?, ?, ?)`,
+                    record.id_number.trim(),
+                    record.first_name.trim(),
+                    record.last_name.trim(),
+                );
+                numSuccess++;
+            }
+            await db.run("COMMIT");
+
+            let message = `${numSuccess} record${numSuccess !== 1 ? "s" : ""} imported successfully`;
+            if (numFailure > 0) {
+                message += ` (${numFailure} failed validation)`;
+            }
+            await dialog.showMessageBox(mainWindow, {
+                title: "Success",
+                message: message,
             });
         } catch (err) {
             dialog.showErrorBox("Error", err.toString());

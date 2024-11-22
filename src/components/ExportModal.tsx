@@ -61,6 +61,8 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
             window.electron.exportMeetingReport(startDate, endDate, Number(meetingThreshold), sendToSlack);
         } else if (buttonName === "export-checkin-data") {
             window.electron.exportCheckinData(startDate, endDate, Number(meetingThreshold), sendToSlack);
+        } else if (buttonName === "import-students") {
+            window.electron.importStudents();
         }
     }
 
@@ -148,6 +150,10 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     name="export-checkin-data"
                     className="modal-submit-button"
                     type="submit">Checkin Data</button>
+                <button
+                    name="import-students"
+                    className="modal-submit-button"
+                    type="submit">Import Students</button>
             </div>
         </form>
     </Modal>;
