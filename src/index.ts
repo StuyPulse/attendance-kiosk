@@ -105,7 +105,7 @@ const createWindow = async () => {
             const date = toISOString(new Date()).split("T")[0];
             const result = await db.get(`
                 SELECT count(*) AS numCheckins,
-                       sum(hasCheckout) AS numCheckouts
+                       ifnull(sum(hasCheckout), 0) AS numCheckouts
                 FROM
                   (SELECT date(timestamp) AS date,
                           idNumber,
