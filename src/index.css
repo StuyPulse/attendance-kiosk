@@ -64,7 +64,7 @@ body, input, button {
   margin-top: 0;
 }
 
-.idNumberInput {
+.id-number-input {
   width: 72.5%;
   font-size: 2rem;
   margin: 0 auto 0.75rem;
@@ -74,7 +74,7 @@ body, input, button {
   border: 1px solid grey;
 }
 
-.idNumberInput.shake {
+.id-number-input.shake {
     animation: shake 0.2s ease-in-out 0s 2;
 }
 
@@ -85,7 +85,7 @@ body, input, button {
   100% { margin-left: 0; }
 }
 
-.idNumberInput:focus {
+.id-number-input:focus {
   outline-width: 0;
 }
 
@@ -161,7 +161,7 @@ body, input, button {
     margin: 0;
   }
 
-  .modalCloseButton {
+  .modal-close-button {
     position: absolute;
     top: 0;
     right: 0;
@@ -173,13 +173,13 @@ body, input, button {
     transition: none;
   }
 
-  .modalCloseButton:active {
+  .modal-close-button:active {
     background: none;
     color: black;
     transition: none;
   }
 
-  .todayStats {
+  .today-stats {
     margin: 0 1rem;
   }
 
@@ -201,7 +201,7 @@ body, input, button {
     transition: all 0.1s ease-out;
   }
 
-  .modalRow {
+  .modal-row {
     margin-top: 0.75rem;
 
     div {
@@ -209,15 +209,15 @@ body, input, button {
     }
   }
 
-  .dateInput {
+  .date-input {
     text-align: center;
   }
 
-  .dateRange {
+  .date-range {
     font-size: 1.25rem;
   }
 
-  #meetingThreshold {
+  #meeting-threshold {
     width: 100px;
     text-align: center;
   }
@@ -228,18 +228,18 @@ body, input, button {
     margin-right: 0.5rem;
   }
 
-  #meetingThreshold::-webkit-outer-spin-button,
-  #meetingThreshold::-webkit-inner-spin-button {
+  #meeting-threshold::-webkit-outer-spin-button,
+  #meeting-threshold::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
-  .meetingThresholdButton {
+  .meeting-threshold-button {
     width: 50px;
     margin: 0 0.5rem;
   }
 
-  .modalSubmitButton {
+  .modal-submit-button {
     margin: 0 0.5rem;
   }
 }

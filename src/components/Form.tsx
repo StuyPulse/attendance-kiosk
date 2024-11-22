@@ -119,8 +119,8 @@ export default function Form({ isActive, onSuccess, onWrongBarcode }: FormProps)
         <form onSubmit={handleSubmit}>
             <input
                 type="text"
-                name="idNumber"
-                className={"idNumberInput" + (isShaking ? " shake" : "")}
+                name="id-number"
+                className={"id-number-input" + (isShaking ? " shake" : "")}
                 value={idNumber}
                 onChange={handleChangeFromKeyboardInput}
                 onBlur={handleBlur}

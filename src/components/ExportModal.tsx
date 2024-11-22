@@ -55,11 +55,11 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         e.preventDefault();
         const submitter = (e.nativeEvent as SubmitEvent).submitter;
         const buttonName = (submitter as HTMLButtonElement).name;
-        if (buttonName === "exportAttendanceReport") {
+        if (buttonName === "export-attendance-report") {
             window.electron.exportAttendanceReport(startDate, endDate, Number(meetingThreshold), sendToSlack);
-        } else if (buttonName === "exportMeetingReport") {
+        } else if (buttonName === "export-meeting-report") {
             window.electron.exportMeetingReport(startDate, endDate, Number(meetingThreshold), sendToSlack);
-        } else if (buttonName === "exportCheckinData") {
+        } else if (buttonName === "export-checkin-data") {
             window.electron.exportCheckinData(startDate, endDate, Number(meetingThreshold), sendToSlack);
         }
     }
@@ -70,85 +70,83 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         onAfterOpen={handleModalOpen}
         onRequestClose={onClose}
         closeTimeoutMS={250}>
-        <button className="modalCloseButton" onClick={onClose}>✕</button>
+        <button className="modal-close-button" onClick={onClose}>✕</button>
         <h2>Export Reports</h2>
-        <div className="modalRow">
-            <span className="todayStats">Checkins today: {numCheckinsToday}</span>
-            <span className="todayStats">Checkouts today: {numCheckoutsToday}</span>
+        <div className="modal-row">
+            <span className="today-stats">Checkins today: {numCheckinsToday}</span>
+            <span className="today-stats">Checkouts today: {numCheckoutsToday}</span>
         </div>
         <form onSubmit={handleSubmit}>
-            <div className="modalRow">
+            <div className="modal-row">
                 <div><label>Date Range</label></div>
-                <div className="dateRange">
+                <div className="date-range">
                     <input
-                        id="startDate"
-                        className="dateInput"
-                        name="startDate"
+                        className="date-input"
+                        name="start-date"
                         type="date"
                         value={startDate}
                         required
                         onChange={(e) => setStartDate(e.target.value)} />
                     {" – "}
                     <input
-                        id="endDate"
-                        className="dateInput"
-                        name="endDate"
+                        className="date-input"
+                        name="end-date"
                         type="date"
                         value={endDate}
                         required
                         onChange={(e) => setEndDate(e.target.value)} />
                 </div>
             </div>
-            <div className="modalRow">
-                <div><label htmlFor="meetingThreshold">Meeting Threshold</label></div>
+            <div className="modal-row">
+                <div><label htmlFor="meeting-threshold">Meeting Threshold</label></div>
                 <div>Minimum number of unique checkins for a given day to count as a meeting</div>
                 <div>
                     <button
-                        className="meetingThresholdButton"
+                        className="meeting-threshold-button"
                         type="button"
                         onClick={decrementMeetingThreshold}>−</button>
                     <input
-                        id="meetingThreshold"
-                        name="meetingThreshold"
+                        id="meeting-threshold"
+                        name="meeting-threshold"
                         value={meetingThreshold}
                         type="number"
                         min="1"
                         required
                         onChange={handleMeetingThresholdChange} />
                     <button
-                        className="meetingThresholdButton"
+                        className="meeting-threshold-button"
                         type="button"
                         onClick={incrementMeetingThreshold}>+</button>
                 </div>
             </div>
-            <div className="modalRow">
+            <div className="modal-row">
                 <input
                     type="radio"
-                    id="exportToFile"
-                    name="exportOption"
+                    id="export-to-file"
+                    name="export-option"
                     checked={!sendToSlack}
                     onClick={() => setSendToSlack(false)} />
-                <label htmlFor="exportToFile">Export to USB drive</label>
+                <label htmlFor="export-to-file">Export to USB drive</label>
                 <input
                     type="radio"
-                    id="sendToSlack"
-                    name="exportOption"
+                    id="send-to-slack"
+                    name="export-option"
                     checked={sendToSlack}
                     onClick={() => setSendToSlack(true)} />
-                <label htmlFor="sendToSlack">Send to Kevin on Slack</label>
+                <label htmlFor="send-to-slack">Send to Kevin on Slack</label>
             </div>
-            <div className="modalRow">
+            <div className="modal-row">
                 <button
-                    name="exportAttendanceReport"
-                    className="modalSubmitButton"
+                    name="export-attendance-report"
+                    className="modal-submit-button"
                     type="submit">Attendance Report</button>
                 <button
-                    name="exportMeetingReport"
-                    className="modalSubmitButton"
+                    name="export-meeting-report"
+                    className="modal-submit-button"
                     type="submit">Meeting Report</button>
                 <button
-                    name="exportCheckinData"
-                    className="modalSubmitButton"
+                    name="export-checkin-data"
+                    className="modal-submit-button"
                     type="submit">Checkin Data</button>
             </div>
         </form>
