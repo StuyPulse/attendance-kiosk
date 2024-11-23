@@ -36,7 +36,8 @@ const DB_PATH = path.join(app.getPath("userData"), "data.db");
 })();
 
 if (process.env.MYPULSE_API_KEY) {
-    schedule.scheduleJob("0 0 * * *", async () => {
+    // Sync hourly to MyPulse
+    schedule.scheduleJob("0 * * * *", async () => {
         try {
             const db = await open({
                 filename: DB_PATH,
