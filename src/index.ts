@@ -280,6 +280,18 @@ const createWindow = async () => {
         }
     });
 
+    ipcMain.on("syncToMyPulse", async () => {
+        try {
+            await syncToMyPulse(db);
+            await dialog.showMessageBox(mainWindow, {
+                title: "Success",
+                message: "Synced successfully to MyPulse",
+            });
+        } catch (err) {
+            dialog.showErrorBox("Error", err.toString());
+        }
+    });
+
     mainWindow.setContentSize(800, 480);
 
     // and load the index.html of the app.

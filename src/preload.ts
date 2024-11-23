@@ -11,6 +11,7 @@ declare global {
             exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
             exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
             importStudents: () => void;
+            syncToMyPulse: () => void;
         }
     }
 }
@@ -25,4 +26,5 @@ contextBridge.exposeInMainWorld("electron", {
     exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) =>
         ipcRenderer.send("exportCheckinData", startDate, endDate, meetingThreshold, sendToSlack),
     importStudents: () => ipcRenderer.send("importStudents"),
+    syncToMyPulse: () => ipcRenderer.send("syncToMyPulse"),
 });
