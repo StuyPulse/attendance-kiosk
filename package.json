@@ -47,8 +47,11 @@
   "license": "MIT",
   "dependencies": {
     "@slack/web-api": "^7.4.0",
+    "@types/node-schedule": "^2.1.7",
+    "axios": "^1.7.7",
     "csv-parse": "^5.6.0",
     "electron-squirrel-startup": "^1.0.1",
+    "node-schedule": "^2.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-modal": "^3.16.1",
