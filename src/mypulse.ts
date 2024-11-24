@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Database } from "sqlite";
 
 import { generateAttendanceReport, generateCheckinData } from "./report";
@@ -34,9 +33,15 @@ export async function syncToMyPulse(db: Database) {
     formData.append("attendance", new Blob([attendanceReport], { type: "text/csv" }), "attendance.csv");
     formData.append("checkins", new Blob([checkinData], { type: "text/csv" }), "checkins.csv");
 
-    await axios.post("https://my.stuypulse.com/api/post/scanner", formData, {
+    const response = await fetch("https://my.stuypulse.com/api/post/scanner", {
+        method: "POST",
         headers: {
             "key": process.env.MYPULSE_API_KEY,
         },
+        body: formData,
     });
+
+    if (!response.ok) {
+        throw new Error(`Failed to sync to MyPulse: ${response.status} ${await response.text()}`);
+    }
 }
