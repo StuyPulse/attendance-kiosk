@@ -1,6 +1,6 @@
 import { Database } from "sqlite";
 
-import { generateAttendanceReport, generateCheckinData } from "./report";
+import { generateAttendanceReport, generateCheckinData, generateMeetingReport } from "./report";
 
 const MEETING_THRESHOLD = 10;
 
@@ -23,14 +23,17 @@ export async function syncToMyPulse(db: Database) {
 
     const [
         attendanceReport,
+        meetingReport,
         checkinData,
     ] = await Promise.all([
         generateAttendanceReport(db, startDate, endDate, MEETING_THRESHOLD),
+        generateMeetingReport(db, startDate, endDate, MEETING_THRESHOLD),
         generateCheckinData(db, startDate, endDate, MEETING_THRESHOLD),
     ]);
 
     const formData = new FormData();
     formData.append("attendance", new Blob([attendanceReport], { type: "text/csv" }), "attendance.csv");
+    formData.append("meetings", new Blob([meetingReport], { type: "text/csv" }), "meetings.csv");
     formData.append("checkins", new Blob([checkinData], { type: "text/csv" }), "checkins.csv");
 
     const response = await fetch("https://my.stuypulse.com/api/post/scanner", {
