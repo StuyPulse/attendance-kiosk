@@ -25,7 +25,8 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     function handleModalOpen() {
         const tzOffset = (new Date()).getTimezoneOffset() * 60000;
         const date = new Date(Date.now() - tzOffset);
-        const defaultStartDate = date.getFullYear() + "-01-01";
+        const startYear = date.getMonth() < 8 ? date.getFullYear() - 1 : date.getFullYear();
+        const defaultStartDate = startYear + "-09-01";
         const defaultEndDate = date.toISOString().split("T")[0];
 
         setStartDate(defaultStartDate);
