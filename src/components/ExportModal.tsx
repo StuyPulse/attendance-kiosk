@@ -66,6 +66,8 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
             window.electron.importStudents();
         } else if (buttonName === "sync-to-mypulse") {
             window.electron.syncToMyPulse();
+        } else if (buttonName === "send-report-email") {
+            window.electron.sendReportEmail();
         }
     }
 
@@ -170,6 +172,12 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     className="modal-submit-button"
                     type="submit">
                     Sync to MyPulse
+                </button>
+                <button
+                    name="send-report-email"
+                    className="modal-submit-button"
+                    type="submit">
+                    Send Report Email
                 </button>
             </div>
         </form>

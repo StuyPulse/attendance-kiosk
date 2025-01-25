@@ -3,6 +3,9 @@ import { Database } from "sqlite";
 // Time between the first and last swipe of a day to consider a student to have checked out
 export const MIN_CHECKOUT_TIME_S = 1800;
 
+// Meeting threshold to use for automated reports
+export const MEETING_THRESHOLD = 10;
+
 export async function generateAttendanceReport(db: Database, startDate: string, endDate: string, meetingThreshold: number) {
     const [
         checkinCountsResult,
@@ -154,4 +157,20 @@ export async function generateCheckinData(db: Database, startDate: string, endDa
     return header + checkinsResult.map((row) =>
         `${row.date},${row.idNumber},${row.firstName},${row.lastName},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours.toFixed(2)}\n`
     ).join("");
+}
+
+export async function isMeetingDate(db: Database, date: string, meetingThreshold: number) {
+    const meetingsResult = await db.all(`
+        SELECT count(*) >= :meetingThreshold AS isMeeting
+        FROM
+          (SELECT idNumber
+           FROM checkin
+           WHERE timestamp LIKE :date || '%'
+           GROUP BY idNumber)
+    `, {
+        ":date": date,
+        ":meetingThreshold": meetingThreshold,
+    });
+
+    return meetingsResult[0].isMeeting === 1;
 }

@@ -46,6 +46,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.4",
     "@slack/web-api": "^7.4.0",
     "@types/node-schedule": "^2.1.7",
     "csv-parse": "^5.6.0",

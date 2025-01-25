@@ -1,25 +1,11 @@
 import { Database } from "sqlite";
 
-import { generateAttendanceReport, generateCheckinData, generateMeetingReport } from "./report";
-
-const MEETING_THRESHOLD = 10;
-
-function getStartDate() {
-    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
-    const date = new Date(Date.now() - tzOffset);
-    const year = date.getMonth() < 8 ? date.getFullYear() - 1 : date.getFullYear();
-    return year + "-09-01";
-}
-
-function getEndDate() {
-    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
-    const date = new Date(Date.now() - tzOffset);
-    return date.toISOString().split("T")[0];
-}
+import { generateAttendanceReport, generateCheckinData, generateMeetingReport, MEETING_THRESHOLD } from "./report";
+import { getStartDate, getToday } from "./util";
 
 export async function syncToMyPulse(db: Database) {
     const startDate = getStartDate();
-    const endDate = getEndDate();
+    const endDate = getToday();
 
     const [
         attendanceReport,
