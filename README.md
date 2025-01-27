@@ -38,11 +38,13 @@ effect automatically, but changes to the main process require restarting the app
 
 ## Building
 
-To build an `arm64` deb package for the Raspberry Pi, run:
+To build an `arm64` deb package for the Raspberry Pi, ensure that Docker is installed and run:
 
 ```bash
-npm run make:pi
+npm run build
 ```
+
+The package for the Raspberry Pi will be written to `out/make/deb/arm64/attendance-kiosk_1.0.0_arm64.deb`.
 
 ## Barcode scanner configuration
 
@@ -103,7 +105,7 @@ variables accordingly:
 
 ```ini
 [autostart]
-kiosk = SLACK_TOKEN="<slack token>" SLACK_EXPORT_USER_ID="<user ID>" attendance-kiosk --kiosk
+kiosk = SLACK_TOKEN="..." SLACK_EXPORT_USER_ID="..." MYPULSE_API_KEY="..." SENDGRID_API_KEY="..." attendance-kiosk --kiosk
 ```
 
 Then reboot the Raspberry Pi for everything to take effect.

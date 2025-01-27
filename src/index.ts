@@ -13,8 +13,9 @@ import {
     generateAttendanceReport,
     generateCheckinData,
     generateMeetingReport,
-    isMeetingDate, MEETING_THRESHOLD,
-    MIN_CHECKOUT_TIME_S
+    isMeetingDate,
+    MEETING_THRESHOLD,
+    MIN_CHECKOUT_TIME_S,
 } from "./report";
 import { syncToMyPulse } from "./mypulse";
 import { sendReportEmail } from "./email";

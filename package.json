@@ -9,6 +9,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "make:pi": "electron-forge make --platform linux --arch arm64",
+    "build": "docker run -v .:/code -w /code2 -it node:22 /code/scripts/build.sh",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
