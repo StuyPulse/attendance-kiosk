@@ -46,22 +46,6 @@ npm run build
 
 The package for the Raspberry Pi will be written to `out/make/deb/arm64/attendance-kiosk_1.0.0_arm64.deb`.
 
-## Barcode scanner configuration
-
-This app can be used with any barcode scanner in keyboard emulation mode. The following instructions are for the
-Yokoscan EP8280, which we no longer use, but the documentation is left here for historical reference.
-
-The Yokoscan EP8280 scanner is configured by scanning special barcodes which can be found in the
-[user manual](docs/EP8280_NFC_User_Guide.pdf).
-
-The scanner should be configured to read only Code 39 barcodes to optimize scanner efficiency and ignore spurious reads
-of the emergency QR code on student IDs, as well as other undesired inputs. The "Disable All Symbologies" code in the
-manual doesn't seem to work, so unfortunately it is necessary to scan the "off" code for each symbology individually.
-
-The length range for Code 39 should also be set to a minimum and maximum of 11 characters (the length of an OSIS number
-plus start and stop characters). This configures the scanner to only read the OSIS barcode and not the other barcode on
-the ID card.
-
 ## Raspberry Pi setup
 
 Install the latest Raspberry Pi OS onto a microSD card using the Raspberry Pi Imager, then insert the microSD card into
