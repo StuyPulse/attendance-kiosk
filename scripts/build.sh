@@ -6,8 +6,9 @@ if [ ! -f /.dockerenv ]; then
     exit 1
 fi
 
+rm -rf /code/out
 cp -a /code/. .
-rm -rf node_modules .webpack /code/out
+rm -rf node_modules .webpack
 
 apt-get update
 apt-get install dpkg fakeroot
