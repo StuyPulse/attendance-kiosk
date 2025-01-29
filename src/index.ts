@@ -13,9 +13,9 @@ import {
     generateAttendanceReport,
     generateCheckinData,
     generateMeetingReport,
+    getStatsForDate,
     isMeetingDate,
     MEETING_THRESHOLD,
-    MIN_CHECKOUT_TIME_S,
 } from "./report";
 import { syncToMyPulse } from "./mypulse";
 import { sendReportEmail } from "./email";
@@ -148,24 +148,7 @@ const createWindow = async () => {
 
     ipcMain.handle("getTodaysStats", async () => {
         try {
-            const date = toISOString(new Date()).split("T")[0];
-            const result = await db.get(`
-                SELECT count(*) AS numCheckins,
-                       ifnull(sum(hasCheckout), 0) AS numCheckouts
-                FROM
-                  (SELECT date(timestamp) AS date,
-                          idNumber,
-                          (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} AS hasCheckout
-                   FROM checkin
-                   WHERE date(timestamp) = :date
-                   GROUP BY idNumber)
-            `, {
-                ":date": date,
-            });
-            return {
-                numCheckins: result.numCheckins,
-                numCheckouts: result.numCheckouts,
-            }
+            return await getStatsForDate(db, getToday());
         } catch (err) {
             dialog.showErrorBox("Error", err.toString());
         }

@@ -21,6 +21,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     const [sendToSlack, setSendToSlack] = useState(false);
     const [numCheckinsToday, setNumCheckinsToday] = useState(0);
     const [numCheckoutsToday, setNumCheckoutsToday] = useState(0);
+    const [checkoutRatePercent, setCheckoutRatePercent] = useState(0);
 
     function handleModalOpen() {
         const tzOffset = (new Date()).getTimezoneOffset() * 60000;
@@ -34,9 +35,10 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         setMeetingThreshold(DEFAULT_MEETING_THRESHOLD);
         setSendToSlack(false);
 
-        window.electron.getTodaysStats().then(({ numCheckins, numCheckouts }) => {
+        window.electron.getTodaysStats().then(({ numCheckins, numCheckouts, checkoutRatePercent }) => {
             setNumCheckinsToday(numCheckins);
             setNumCheckoutsToday(numCheckouts);
+            setCheckoutRatePercent(checkoutRatePercent);
         });
     }
 
@@ -82,6 +84,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         <div className="modal-row">
             <span className="today-stats">Checkins today: {numCheckinsToday}</span>
             <span className="today-stats">Checkouts today: {numCheckoutsToday}</span>
+            <span className="today-stats">Checkout rate: {checkoutRatePercent.toFixed(2)}%</span>
         </div>
         <form onSubmit={handleSubmit}>
             <div className="modal-row">

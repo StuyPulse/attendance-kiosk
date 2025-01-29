@@ -6,7 +6,7 @@ declare global {
     interface Window {
         electron: {
             submit: (idNumber: string) => Promise<{ success: boolean, name?: string }>;
-            getTodaysStats: () => Promise<{ numCheckins: number, numCheckouts: number }>;
+            getTodaysStats: () => Promise<{ numCheckins: number, numCheckouts: number, checkoutRatePercent: number }>;
             exportAttendanceReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
             exportMeetingReport: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;
             exportCheckinData: (startDate: string, endDate: string, meetingThreshold: number, sendToSlack: boolean) => void;

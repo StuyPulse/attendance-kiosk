@@ -174,3 +174,26 @@ export async function isMeetingDate(db: Database, date: string, meetingThreshold
 
     return meetingsResult[0].isMeeting === 1;
 }
+
+export async function getStatsForDate(db: Database, date: string) {
+    const result = await db.get(`
+        SELECT count(*) AS numCheckins,
+               ifnull(sum(hasCheckout), 0) AS numCheckouts,
+               ifnull(sum(hasCheckout) * 100.0 / count(*), 0) AS checkoutRatePercent
+        FROM
+            (SELECT date(timestamp) AS date,
+                    idNumber,
+                    (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} AS hasCheckout
+             FROM checkin
+             WHERE date(timestamp) = :date
+             GROUP BY idNumber)
+    `, {
+        ":date": date,
+    });
+
+    return {
+        numCheckins: result.numCheckins,
+        numCheckouts: result.numCheckouts,
+        checkoutRatePercent: result.checkoutRatePercent,
+    };
+}
