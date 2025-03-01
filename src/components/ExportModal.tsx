@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 
-const DEFAULT_MEETING_THRESHOLD = "10";
+const DEFAULT_MEETING_THRESHOLD = "20";
 
 interface ExportModalProps {
     isOpen: boolean;

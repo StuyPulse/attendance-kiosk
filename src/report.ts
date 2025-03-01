@@ -4,7 +4,7 @@ import { Database } from "sqlite";
 export const MIN_CHECKOUT_TIME_S = 1800;
 
 // Meeting threshold to use for automated reports
-export const MEETING_THRESHOLD = 10;
+export const MEETING_THRESHOLD = 20;
 
 export async function generateAttendanceReport(db: Database, startDate: string, endDate: string, meetingThreshold: number) {
     const [
