@@ -13,8 +13,9 @@ export function getCSVFilename(prefix: string) {
 export function getStartDate() {
     const tzOffset = (new Date()).getTimezoneOffset() * 60000;
     const date = new Date(Date.now() - tzOffset);
-    const year = date.getMonth() < 8 ? date.getFullYear() - 1 : date.getFullYear();
-    return year + "-09-01";
+    const year = date.getFullYear();
+    const month = date.getMonth() < 8 ? "01" : "09";
+    return `${year}-${month}-01`;
 }
 
 export function getToday() {

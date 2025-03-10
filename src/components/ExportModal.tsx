@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import { getStartDate, getToday } from "../util";
 
 const DEFAULT_MEETING_THRESHOLD = "20";
 
@@ -11,10 +12,8 @@ interface ExportModalProps {
 Modal.setAppElement("#app");
 
 export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
-    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
-    const date = new Date(Date.now() - tzOffset);
-    const defaultStartDate = date.getFullYear() + "-01-01";
-    const defaultEndDate = date.toISOString().split("T")[0];
+    const defaultStartDate = getStartDate();
+    const defaultEndDate = getToday();
     const [startDate, setStartDate] = useState(defaultStartDate);
     const [endDate, setEndDate] = useState(defaultEndDate);
     const [meetingThreshold, setMeetingThreshold] = useState(DEFAULT_MEETING_THRESHOLD);
@@ -24,11 +23,8 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     const [checkoutRatePercent, setCheckoutRatePercent] = useState(0);
 
     function handleModalOpen() {
-        const tzOffset = (new Date()).getTimezoneOffset() * 60000;
-        const date = new Date(Date.now() - tzOffset);
-        const startYear = date.getMonth() < 8 ? date.getFullYear() - 1 : date.getFullYear();
-        const defaultStartDate = startYear + "-09-01";
-        const defaultEndDate = date.toISOString().split("T")[0];
+        const defaultStartDate = getStartDate();
+        const defaultEndDate = getToday();
 
         setStartDate(defaultStartDate);
         setEndDate(defaultEndDate);
