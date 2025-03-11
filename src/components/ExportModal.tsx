@@ -131,14 +131,14 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     id="export-to-file"
                     name="export-option"
                     checked={!sendToSlack}
-                    onClick={() => setSendToSlack(false)} />
+                    onChange={() => setSendToSlack(false)} />
                 <label htmlFor="export-to-file">Export to USB drive</label>
                 <input
                     type="radio"
                     id="send-to-slack"
                     name="export-option"
                     checked={sendToSlack}
-                    onClick={() => setSendToSlack(true)} />
+                    onChange={() => setSendToSlack(true)} />
                 <label htmlFor="send-to-slack">Send to Kevin on Slack</label>
             </div>
             <div className="modal-row">
