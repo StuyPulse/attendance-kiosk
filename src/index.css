@@ -257,3 +257,9 @@ body, input, button {
 .ReactModal__Overlay--before-close {
   opacity: 0;
 }
+
+.focus-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
