@@ -9,7 +9,6 @@ export default function Logo({ openModal }: LogoProps) {
     const [downTime, setDownTime] = useState(null);
 
     function handleDown() {
-        console.log("down", downTime);
         setDownTime(new Date());
     }
 
@@ -17,12 +16,10 @@ export default function Logo({ openModal }: LogoProps) {
         if (downTime === null) {
             return;
         }
-        console.log("up", downTime);
         setDownTime(null);
     }
 
     function handleLeave() {
-        console.log("leave", downTime);
         setDownTime(null);
     }
 
