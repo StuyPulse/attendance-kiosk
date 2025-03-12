@@ -55,7 +55,7 @@ export default function App() {
             <h1 className="title">StuyPulse Attendance Kiosk</h1>
             <div className="row">
                 <div className="column">
-                    <Logo onTripleClick={() => setExportModalOpen(true)} />
+                    <Logo openModal={() => setExportModalOpen(true)} />
                     <Clock />
                 </div>
                 <div className="column">

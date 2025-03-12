@@ -148,7 +148,7 @@ body, input, button {
 
 .modal {
   position: absolute;
-  inset: 40px;
+  inset: 30px;
   border: 1px solid rgb(204, 204, 204);
   background: white;
   overflow: auto;
@@ -156,6 +156,7 @@ body, input, button {
   outline: none;
   padding: 20px;
   color: black;
+  font-size: 0.9em;
 
   h2 {
     margin: 0;
@@ -184,11 +185,11 @@ body, input, button {
   }
 
   label {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 
   input, button {
-    font-size: 1.25rem;
+    font-size: 1rem;
     border-radius: 8px;
     border: 1px solid grey;
     padding: 0.5rem;
@@ -214,7 +215,7 @@ body, input, button {
   }
 
   .date-range {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 
   #meeting-threshold {
