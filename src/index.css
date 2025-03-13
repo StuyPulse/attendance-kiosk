@@ -259,6 +259,11 @@ body, input, button {
 }
 
 .focus-modal {
+  padding: 0;
+}
+
+.focus-modal-content {
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;

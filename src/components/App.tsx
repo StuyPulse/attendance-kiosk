@@ -13,7 +13,7 @@ export default function App() {
     const [lastPromptTime, setLastPromptTime] = useState(null);
     const [promptText, setPromptText] = useState(PROMPT_SCAN);
     const [exportModalOpen, setExportModalOpen] = useState(false);
-    const [hasFocus, setHasFocus] = useState(document.hasFocus());
+    const [hasFocus, setHasFocus] = useState(false);
 
     function handleSubmit(name: string) {
         let text = PROMPT_OK;
@@ -46,14 +46,9 @@ export default function App() {
     }, [lastPromptTime]);
 
     useEffect(() => {
-        const handleFocus = () => setHasFocus(true);
         const handleBlur = () => setHasFocus(false);
-
-        window.addEventListener("focus", handleFocus);
         window.addEventListener("blur", handleBlur);
-
         return () => {
-            window.removeEventListener("focus", handleFocus);
             window.removeEventListener("blur", handleBlur);
         };
     }, []);
@@ -67,8 +62,12 @@ export default function App() {
 
     return (
         <>
-            <Modal className="modal focus-modal" isOpen={!hasFocus && !exportModalOpen}>
-                <h1>Please tap the screen to continue</h1>
+            <Modal
+                className="modal focus-modal"
+                isOpen={!hasFocus && !exportModalOpen}>
+                <div className="focus-modal-content" onClick={() => setHasFocus(true)}>
+                    <h1>Please tap the screen to continue</h1>
+                </div>
             </Modal>
             <h1 className="title">StuyPulse Attendance Kiosk</h1>
             <div className="row">
