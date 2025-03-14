@@ -13,6 +13,7 @@ declare global {
             importStudents: () => void;
             syncToMyPulse: () => void;
             sendReportEmail: () => void;
+            backupDBToS3: () => void;
         }
     }
 }
@@ -29,4 +30,5 @@ contextBridge.exposeInMainWorld("electron", {
     importStudents: () => ipcRenderer.send("importStudents"),
     syncToMyPulse: () => ipcRenderer.send("syncToMyPulse"),
     sendReportEmail: () => ipcRenderer.send("sendReportEmail"),
+    backupDBToS3: () => ipcRenderer.send("backupDBToS3"),
 });

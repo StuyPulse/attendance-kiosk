@@ -66,6 +66,8 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
             window.electron.syncToMyPulse();
         } else if (buttonName === "send-report-email") {
             window.electron.sendReportEmail();
+        } else if (buttonName === "backup-db-to-s3") {
+            window.electron.backupDBToS3();
         }
     }
 
@@ -177,6 +179,12 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     className="modal-submit-button"
                     type="submit">
                     Send Report Email
+                </button>
+                <button
+                    name="backup-db-to-s3"
+                    className="modal-submit-button"
+                    type="submit">
+                    Back up DB to S3
                 </button>
             </div>
         </form>

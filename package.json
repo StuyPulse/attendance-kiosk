@@ -47,6 +47,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.758.0",
     "@sendgrid/mail": "^8.1.4",
     "@slack/web-api": "^7.4.0",
     "@types/node-schedule": "^2.1.7",

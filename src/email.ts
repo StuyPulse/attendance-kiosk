@@ -1,7 +1,7 @@
 import { Database } from "sqlite";
 import sgMail from "@sendgrid/mail";
 
-import { getStartDate, getToday, getCSVFilename } from "./util";
+import { getStartDate, getToday, getTimestampedFilename } from "./util";
 import {
     generateAttendanceReport,
     generateCheckinData,
@@ -45,17 +45,17 @@ Attached are the attendance reports for the period ${startDate} to ${today}.`;
         attachments: [
             {
                 content: Buffer.from(attendanceReport).toString("base64"),
-                filename: getCSVFilename("attendance-report"),
+                filename: getTimestampedFilename("attendance-report", "csv"),
                 type: "text/csv",
             },
             {
                 content: Buffer.from(meetingReport).toString("base64"),
-                filename: getCSVFilename("meeting-report"),
+                filename: getTimestampedFilename("meeting-report", "csv"),
                 type: "text/csv",
             },
             {
                 content: Buffer.from(checkinData).toString("base64"),
-                filename: getCSVFilename("checkins"),
+                filename: getTimestampedFilename("checkins", "csv"),
                 type: "text/csv",
             },
         ],

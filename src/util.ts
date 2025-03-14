@@ -4,10 +4,10 @@ export function toISOString(date: Date) {
     return (new Date(date.getTime() - tzOffset)).toISOString().slice(0, -1);
 }
 
-export function getCSVFilename(prefix: string) {
+export function getTimestampedFilename(prefix: string, extension: string) {
     const dateStr = toISOString(new Date());
     const dateStrNums = dateStr.split(".")[0].replace(/[^0-9]/g, "");
-    return `${prefix}-${dateStrNums}.csv`;
+    return `${prefix}-${dateStrNums}.${extension}`;
 }
 
 export function getStartDate() {
