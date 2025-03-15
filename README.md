@@ -88,7 +88,14 @@ Add the following to `~/.config/labwc/autostart` to autostart the attendance kio
 variables accordingly:
 
 ```bash
-SLACK_TOKEN="..." SLACK_EXPORT_USER_ID="..." MYPULSE_API_KEY="..." SENDGRID_API_KEY="..." attendance-kiosk --kiosk
+SLACK_TOKEN="..." \
+SLACK_EXPORT_USER_ID="..." \
+MYPULSE_API_KEY="..." \
+SENDGRID_API_KEY="..." \
+BACKUP_AWS_REGION="..." \
+BACKUP_S3_BUCKET="..." \
+BACKUP_S3_PREFIX="..." \
+attendance-kiosk --kiosk
 ```
 
 Then reboot the Raspberry Pi for everything to take effect.
