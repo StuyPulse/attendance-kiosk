@@ -196,7 +196,7 @@ body, input, button {
     transition: all 0.2s ease-in;
   }
 
-  button:active {
+  button:enabled:active {
     background-color: red;
     color: white;
     transition: all 0.1s ease-out;

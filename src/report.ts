@@ -1,4 +1,5 @@
 import { Database } from "sqlite";
+import { TodaysStats } from "./types";
 
 // Time between the first and last swipe of a day to consider a student to have checked out
 export const MIN_CHECKOUT_TIME_S = 1800;
@@ -175,7 +176,7 @@ export async function isMeetingDate(db: Database, date: string, meetingThreshold
     return meetingsResult[0].isMeeting === 1;
 }
 
-export async function getStatsForDate(db: Database, date: string) {
+export async function getStatsForDate(db: Database, date: string): Promise<TodaysStats> {
     const result = await db.get(`
         SELECT count(*) AS numCheckins,
                ifnull(sum(hasCheckout), 0) AS numCheckouts,

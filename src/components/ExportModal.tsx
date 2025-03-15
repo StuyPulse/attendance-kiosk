@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { getStartDate, getToday } from "../util";
+import { EnabledActions } from "../types";
 
 const DEFAULT_MEETING_THRESHOLD = "20";
 
 interface ExportModalProps {
     isOpen: boolean;
     onClose: () => void;
+    enabledActions: EnabledActions;
 }
 
 Modal.setAppElement("#app");
 
-export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
+export default function ExportModal({ isOpen, onClose, enabledActions }: ExportModalProps) {
     const defaultStartDate = getStartDate();
     const defaultEndDate = getToday();
     const [startDate, setStartDate] = useState(defaultStartDate);
@@ -139,6 +141,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                     type="radio"
                     id="send-to-slack"
                     name="export-option"
+                    disabled={!enabledActions.sendToSlack}
                     checked={sendToSlack}
                     onChange={() => setSendToSlack(true)} />
                 <label htmlFor="send-to-slack">Send to Kevin on Slack</label>
@@ -171,19 +174,22 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
                 <button
                     name="sync-to-mypulse"
                     className="modal-submit-button"
-                    type="submit">
+                    type="submit"
+                    disabled={!enabledActions.syncToMyPulse}>
                     Sync to MyPulse
                 </button>
                 <button
                     name="send-report-email"
                     className="modal-submit-button"
-                    type="submit">
+                    type="submit"
+                    disabled={!enabledActions.sendReportEmail}>
                     Send Report Email
                 </button>
                 <button
                     name="backup-db-to-s3"
                     className="modal-submit-button"
-                    type="submit">
+                    type="submit"
+                    disabled={!enabledActions.backupDBToS3}>
                     Back up DB to S3
                 </button>
             </div>

@@ -4,6 +4,7 @@ import Form from "./Form";
 import Logo from "./Logo";
 import ExportModal from "./ExportModal";
 import Modal from "react-modal";
+import { EnabledActions } from "../types";
 
 const PROMPT_SCAN = "Swipe ID (top barcode) or enter OSIS — do not check in for others";
 const PROMPT_OTHER_BARCODE = "Wrong barcode — swipe top barcode on ID";
@@ -14,6 +15,12 @@ export default function App() {
     const [promptText, setPromptText] = useState(PROMPT_SCAN);
     const [exportModalOpen, setExportModalOpen] = useState(false);
     const [hasFocus, setHasFocus] = useState(false);
+    const [enabledActions, setEnabledActions] = useState({
+        sendToSlack: false,
+        syncToMyPulse: false,
+        sendReportEmail: false,
+        backupDBToS3: false,
+    });
 
     function handleSubmit(name: string) {
         let text = PROMPT_OK;
@@ -48,6 +55,7 @@ export default function App() {
     useEffect(() => {
         const handleBlur = () => setHasFocus(false);
         window.addEventListener("blur", handleBlur);
+        window.electron.getEnabledActions().then(setEnabledActions);
         return () => {
             window.removeEventListener("blur", handleBlur);
         };
@@ -87,7 +95,8 @@ export default function App() {
             </div>
             <ExportModal
                 isOpen={exportModalOpen}
-                onClose={() => setExportModalOpen(false)} />
+                onClose={() => setExportModalOpen(false)}
+                enabledActions={enabledActions} />
         </>
     );
 }
