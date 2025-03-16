@@ -10,6 +10,9 @@ rm -rf /code/out
 cp -a /code/. .
 rm -rf node_modules .webpack
 
+sed -i "s/DEV_COMMIT/$(git rev-parse --short HEAD)/" package.json
+sed -i "s/DEV_BUILD_TIME/$(date)/" package.json
+
 apt-get update
 apt-get install dpkg fakeroot
 

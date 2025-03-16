@@ -156,7 +156,7 @@ body, input, button {
   outline: none;
   padding: 20px;
   color: black;
-  font-size: 0.9em;
+  font-size: 0.9rem;
 
   h2 {
     margin: 0;
@@ -242,6 +242,15 @@ body, input, button {
 
   .modal-submit-button {
     margin: 0.25rem;
+  }
+
+  .build-footer {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    font-size: 0.75rem;
   }
 }
 

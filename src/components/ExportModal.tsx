@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import { getStartDate, getToday } from "../util";
 import { EnabledActions } from "../types";
+import packageJSON from "../../package.json";
 
 const DEFAULT_MEETING_THRESHOLD = "20";
 
@@ -194,5 +195,8 @@ export default function ExportModal({ isOpen, onClose, enabledActions }: ExportM
                 </button>
             </div>
         </form>
+        <div className="build-footer">
+            attendance-kiosk {packageJSON.commit} (built {packageJSON.buildTime})
+        </div>
     </Modal>;
 }

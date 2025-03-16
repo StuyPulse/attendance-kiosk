@@ -2,6 +2,8 @@
   "name": "attendance-kiosk",
   "productName": "attendance-kiosk",
   "version": "1.0.0",
+  "commit": "DEV_COMMIT",
+  "buildTime": "DEV_BUILD_TIME",
   "description": "My Electron application description",
   "main": ".webpack/main",
   "scripts": {
