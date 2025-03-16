@@ -53,10 +53,15 @@ export default function App() {
     }, [lastPromptTime]);
 
     useEffect(() => {
+        const handleFocus = () => setHasFocus(true);
         const handleBlur = () => setHasFocus(false);
+
+        window.addEventListener("focus", handleFocus);
         window.addEventListener("blur", handleBlur);
+
         window.electron.getEnabledActions().then(setEnabledActions);
         return () => {
+            window.removeEventListener("focus", handleFocus);
             window.removeEventListener("blur", handleBlur);
         };
     }, []);
