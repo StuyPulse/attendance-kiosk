@@ -84,6 +84,13 @@ Install the attendance kiosk package:
 sudo dpkg -i attendance-kiosk_1.0.0_arm64.deb
 ```
 
+Set up log directory (assuming the default user is `stuy694`):
+
+```bash
+sudo mkdir /var/log/attendance-kiosk
+sudo chown stuy694:stuy694 /var/log/attendance-kiosk
+```
+
 Add the following to `~/.config/labwc/autostart` to autostart the attendance kiosk on boot, filling in the environment
 variables accordingly:
 
@@ -95,7 +102,7 @@ SENDGRID_API_KEY="..." \
 BACKUP_AWS_REGION="..." \
 BACKUP_S3_BUCKET="..." \
 BACKUP_S3_PREFIX="..." \
-attendance-kiosk --kiosk
+attendance-kiosk --kiosk >> /var/log/attendance-kiosk/out.log 2>> /var/log/attendance-kiosk/err.log
 ```
 
 Then reboot the Raspberry Pi for everything to take effect.
