@@ -93,7 +93,7 @@ if (enabledActions.sendReportEmail) {
 }
 
 if (enabledActions.backupDBToS3) {
-    schedule.scheduleJob("0 22 * * * ", async () => {
+    schedule.scheduleJob("0 22 * * *", async () => {
         try {
             const db = await open({
                 filename: DB_PATH,
