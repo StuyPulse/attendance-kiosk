@@ -31,7 +31,7 @@ Students are stored in the database using their unique 9-digit ID number, but th
 
     id_number,first_name,last_name
     123456789,John,Doe
-    123456789,Jane,Doe
+    694694694,Jane,Doe
 
 ## Development
 
