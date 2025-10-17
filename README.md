@@ -25,6 +25,14 @@ A student counts as having checked out on a given day if their first and last sw
 minutes apart. This is to prevent multiple checkins in quick succession but no actual checkout (e.g. if the student
 forgot if they already swiped in and swiped in again) from bringing down the student's average time spent at meetings.
 
+## Importing Student Names
+
+Students are stored in the database using their unique 9-digit ID number, but their names can be imported using a .csv file. It should follow the provided format below, including the necessary header.
+
+    id_number,first_name,last_name
+    123456789,John,Doe
+    694694694,Jane,Doe
+
 ## Development
 
 To run the app in development mode, run:
