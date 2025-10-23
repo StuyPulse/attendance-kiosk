@@ -7,7 +7,6 @@ import { WebClient } from "@slack/web-api";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 import schedule from "node-schedule";
-import sgMail from "@sendgrid/mail";
 
 import {
     generateAttendanceReport,
@@ -50,8 +49,8 @@ const DB_PATH = path.join(app.getPath("userData"), "data.db");
 const enabledActions: EnabledActions = {
     sendToSlack: process.env.SLACK_TOKEN !== undefined && process.env.SLACK_EXPORT_USER_ID !== undefined,
     syncToMyPulse: process.env.MYPULSE_API_KEY !== undefined,
-    sendReportEmail: process.env.SENDGRID_API_KEY !== undefined,
-    backupDBToS3: process.env.BACKUP_AWS_REGION !== undefined && process.env.BACKUP_S3_BUCKET !== undefined,
+    sendReportEmail: process.env.AWS_REGION !== undefined && process.env.REPORT_EMAIL_TO_ADDRESS !== undefined,
+    backupDBToS3: process.env.AWS_REGION !== undefined && process.env.BACKUP_S3_BUCKET !== undefined,
 };
 
 if (enabledActions.syncToMyPulse) {
@@ -71,8 +70,6 @@ if (enabledActions.syncToMyPulse) {
 }
 
 if (enabledActions.sendReportEmail) {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
     schedule.scheduleJob("0 22 * * *", async () => {
         try {
             const db = await open({

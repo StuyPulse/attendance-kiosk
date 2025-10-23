@@ -106,8 +106,8 @@ variables accordingly:
 SLACK_TOKEN="..." \
 SLACK_EXPORT_USER_ID="..." \
 MYPULSE_API_KEY="..." \
-SENDGRID_API_KEY="..." \
-BACKUP_AWS_REGION="..." \
+AWS_REGION="..." \
+REPORT_EMAIL_TO_ADDRESS="..." \
 BACKUP_S3_BUCKET="..." \
 BACKUP_S3_PREFIX="..." \
 attendance-kiosk --kiosk >> /var/log/attendance-kiosk/out.log 2>> /var/log/attendance-kiosk/err.log

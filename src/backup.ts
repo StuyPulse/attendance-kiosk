@@ -4,7 +4,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getTimestampedFilename } from "./util";
 
 export async function backupDBToS3(db: Database) {
-    if (!process.env.BACKUP_AWS_REGION || !process.env.BACKUP_S3_BUCKET) {
+    if (!process.env.AWS_REGION || !process.env.BACKUP_S3_BUCKET) {
         throw new Error("Missing required environment variables for S3 backup");
     }
 
@@ -21,7 +21,7 @@ export async function backupDBToS3(db: Database) {
     await db.run(`VACUUM INTO "${tmpBackupPath}"`);
     const dbContents = await fs.promises.readFile(tmpBackupPath);
 
-    const client = new S3Client({ region: process.env.BACKUP_AWS_REGION });
+    const client = new S3Client({ region: process.env.AWS_REGION });
     const bucketName = process.env.BACKUP_S3_BUCKET;
     const prefix = process.env.BACKUP_S3_PREFIX || "";
     const filename = getTimestampedFilename("data", "db");
