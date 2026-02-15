@@ -9,7 +9,7 @@ Electron and React.
 ## Exporting reports
 
 Attendance data is stored locally on the device in a SQLite database. To export attendance reports, insert a USB drive
-and triple tap on the 694 logo. The following report types are available:
+and long press on the 694 logo. The following report types are available:
 
 - **Attendance Report** - Number of meetings attended, attendance rate, number of checkouts, checkout rate, and average
   and total time spent at meetings for each student
