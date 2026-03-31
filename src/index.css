@@ -45,10 +45,24 @@ body, input, button {
   margin: 1rem 0;
 }
 
-.logo {
-  width: 225px;
+.logo-stack {
   height: 225px;
   margin: 1rem auto 0;
+  display: grid;
+  place-items: center;
+}
+
+.logo-layer {
+  grid-area: 1 / 1;
+  height: 225px;
+  opacity: 0;
+  transition: opacity 750ms ease-in-out;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.logo-layer.active {
+  opacity: 1;
 }
 
 .date {

@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from "react";
-import logo from "../../assets/Battery-Vector.svg";
+import pulseLogo from "../../assets/Battery.png";
+import plusLogo from "../../assets/StuyPlus.png";
 
 interface LogoProps {
     openModal: () => void;
 }
 
 export default function Logo({ openModal }: LogoProps) {
-    const [downTime, setDownTime] = useState(null);
+    const [downTime, setDownTime] = useState<Date | null>(null);
+    const [index, setIndex] = useState(0);
+
+    const logos = [pulseLogo, plusLogo];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIndex(prevIndex => (prevIndex + 1) % logos.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     function handleDown() {
         setDownTime(new Date());
@@ -31,11 +42,19 @@ export default function Logo({ openModal }: LogoProps) {
         return () => clearTimeout(timeout);
     }, [downTime]);
 
-    return <img
-        className="logo"
-        src={logo}
-        alt="694"
+    return <div
+        className="logo-stack"
         onPointerDown={handleDown}
         onPointerUp={handleUp}
-        onPointerLeave={handleLeave} />;
+        onPointerLeave={handleLeave}>
+        {logos.map((logo, logoIndex) => (
+            <img
+                key={logo}
+                className={`logo-layer${index === logoIndex ? " active" : ""}`}
+                src={logo}
+                alt=""
+                draggable={false}
+            />
+        ))}
+    </div>;
 }
