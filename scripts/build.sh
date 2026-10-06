@@ -14,7 +14,7 @@ sed -i "s/DEV_COMMIT/$(git rev-parse --short HEAD)/" package.json
 sed -i "s/DEV_BUILD_TIME/$(date)/" package.json
 
 apt-get update
-apt-get install dpkg fakeroot
+apt-get install -y dpkg fakeroot
 
 npm install
 npm run make:pi
