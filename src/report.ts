@@ -16,6 +16,7 @@ export async function generateAttendanceReport(db: Database, startDate: string, 
             SELECT t.idNumber,
                    ifnull(student.firstName, '') AS firstName,
                    ifnull(student.lastName, '') AS lastName,
+                   ifnull(student.graduationYear, '') AS graduationYear,
                    numCheckins,
                    numCheckouts,
                    numCheckouts * 100.0 / numCheckins AS checkoutRatePercent,
@@ -73,14 +74,14 @@ export async function generateAttendanceReport(db: Database, startDate: string, 
         }),
     ]);
 
-    const header = "id_number,first_name,last_name,num_checkins,attendance_rate_percent,num_checkouts,checkout_rate_percent,total_hours,average_hours\n";
+    const header = "id_number,first_name,last_name,graduation_year,num_checkins,attendance_rate_percent,num_checkouts,checkout_rate_percent,total_hours,average_hours\n";
     const totalMeetings = totalMeetingsResult.total;
     return header + checkinCountsResult.map((row) => {
         const attendanceRatePercent = (row.numCheckins / totalMeetings * 100).toFixed(2);
         const checkoutRatePercent = row.checkoutRatePercent.toFixed(2);
         const totalHours = row.totalHours.toFixed(2);
         const averageHours = (row.averageHours || 0).toFixed(2);
-        return `${row.idNumber},${row.firstName},${row.lastName},${row.numCheckins},${attendanceRatePercent}%,${row.numCheckouts},${checkoutRatePercent}%,${totalHours},${averageHours}\n`;
+        return `${row.idNumber},${row.firstName},${row.lastName},${row.graduationYear},${row.numCheckins},${attendanceRatePercent}%,${row.numCheckouts},${checkoutRatePercent}%,${totalHours},${averageHours}\n`;
     }).join("");
 }
 
@@ -122,6 +123,7 @@ export async function generateCheckinData(db: Database, startDate: string, endDa
                checkin.idNumber,
                ifnull(student.firstName, '') AS firstName,
                ifnull(student.lastName, '') AS lastName,
+               ifnull(student.graduationYear, '') AS graduationYear,
                min(timestamp) AS checkinTime,
                CASE
                    WHEN (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} THEN max(timestamp)
@@ -154,9 +156,9 @@ export async function generateCheckinData(db: Database, startDate: string, endDa
         ":meetingThreshold": meetingThreshold,
     });
 
-    const header = "date,id_number,first_name,last_name,checkin_time,checkout_time,total_hours\n";
+    const header = "date,id_number,first_name,last_name,graduation_year,checkin_time,checkout_time,total_hours\n";
     return header + checkinsResult.map((row) =>
-        `${row.date},${row.idNumber},${row.firstName},${row.lastName},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours.toFixed(2)}\n`
+        `${row.date},${row.idNumber},${row.firstName},${row.lastName},${row.graduationYear},${row.checkinTime},${row.checkoutTime || ""},${row.totalHours.toFixed(2)}\n`
     ).join("");
 }
 

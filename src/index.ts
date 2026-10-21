@@ -44,6 +44,12 @@ const DB_PATH = path.join(app.getPath("userData"), "data.db");
     await db.exec("CREATE INDEX IF NOT EXISTS timestampIndex ON checkin (timestamp COLLATE NOCASE)");
     await db.exec("CREATE INDEX IF NOT EXISTS idNumberIndex ON checkin (idNumber)");
     await db.exec("CREATE TABLE IF NOT EXISTS student (idNumber TEXT PRIMARY KEY, firstName TEXT, lastName TEXT)");
+
+    const studentColumns = await db.all("PRAGMA table_info(student)");
+    const graduationYearExists = studentColumns.some((col: { name: string }) => col.name === "graduationYear");
+    if (!graduationYearExists) {
+        await db.exec("ALTER TABLE student ADD COLUMN graduationYear NUMBER");
+    }
 })();
 
 const enabledActions: EnabledActions = {
@@ -281,16 +287,18 @@ const createWindow = async () => {
                 const idNumber = record.id_number.trim();
                 const firstName = record.first_name.trim();
                 const lastName = record.last_name.trim();
+                const graduationYear = parseInt(record.graduation_year.trim()) || null;
 
                 if (idNumber.length !== 9 || !firstName || !lastName) {
                     numFailure++;
                     continue;
                 }
 
-                await db.run(`INSERT OR REPLACE INTO student (idNumber, firstName, lastName) VALUES (?, ?, ?)`,
-                    record.id_number.trim(),
-                    record.first_name.trim(),
-                    record.last_name.trim(),
+                await db.run("INSERT OR REPLACE INTO student (idNumber, firstName, lastName, graduationYear) VALUES (?, ?, ?, ?)",
+                    idNumber,
+                    firstName,
+                    lastName,
+                    graduationYear,
                 );
                 numSuccess++;
             }
