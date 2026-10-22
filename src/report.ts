@@ -1,5 +1,6 @@
 import { Database } from "sqlite";
 import { TodaysStats } from "./types";
+import { getCurrentGraduationYears } from "./util";
 
 // Time between the first and last swipe of a day to consider a student to have checked out
 export const MIN_CHECKOUT_TIME_S = 1800;
@@ -86,13 +87,31 @@ export async function generateAttendanceReport(db: Database, startDate: string, 
 }
 
 export async function generateMeetingReport(db: Database, startDate: string, endDate: string, meetingThreshold: number) {
+    const [seniorYear, juniorYear, sophomoreYear, freshmanYear] = getCurrentGraduationYears();
+
     const meetingsResult = await db.all(`
-        SELECT date, numCheckins,
-                     numCheckouts,
-                     numCheckouts * 100.0 / numCheckins AS checkoutRatePercent
+        SELECT t.date,
+               t.numCheckins,
+               t.numCheckouts,
+               t.numCheckouts * 100.0 / t.numCheckins AS checkoutRatePercent,
+               sum(CASE WHEN CAST(student.graduationYear AS INTEGER) = :seniorYear THEN 1 ELSE 0 END) AS numSeniors,
+               sum(CASE WHEN CAST(student.graduationYear AS INTEGER) = :juniorYear THEN 1 ELSE 0 END) AS numJuniors,
+               sum(CASE WHEN CAST(student.graduationYear AS INTEGER) = :sophomoreYear THEN 1 ELSE 0 END) AS numSophomores,
+               sum(CASE WHEN CAST(student.graduationYear AS INTEGER) = :freshmanYear THEN 1 ELSE 0 END) AS numFreshmen
         FROM
-          (SELECT date, count(*) AS numCheckins,
-                        sum(hasCheckout) AS numCheckouts
+          (SELECT date(timestamp) AS date,
+                  idNumber,
+                  (unixepoch(max(timestamp)) - unixepoch(min(timestamp))) >= ${MIN_CHECKOUT_TIME_S} AS hasCheckout
+           FROM checkin
+           WHERE timestamp BETWEEN :startDate AND :endDate
+             OR timestamp LIKE :endDate || '%'
+           GROUP BY date,
+                    idNumber) attendance
+        LEFT JOIN student ON attendance.idNumber = student.idNumber
+        JOIN
+          (SELECT date,
+                  count(*) AS numCheckins,
+                  sum(hasCheckout) AS numCheckouts
            FROM
              (SELECT date(timestamp) AS date,
                      idNumber,
@@ -103,17 +122,24 @@ export async function generateMeetingReport(db: Database, startDate: string, end
               GROUP BY date,
                        idNumber)
            GROUP BY date
-           HAVING numCheckins >= :meetingThreshold
-           ORDER BY date)
+           HAVING numCheckins >= :meetingThreshold) t ON attendance.date = t.date
+        GROUP BY t.date,
+                 t.numCheckins,
+                 t.numCheckouts
+        ORDER BY t.date
     `, {
         ":startDate": startDate,
         ":endDate": endDate,
         ":meetingThreshold": meetingThreshold,
+        ":seniorYear": seniorYear,
+        ":juniorYear": juniorYear,
+        ":sophomoreYear": sophomoreYear,
+        ":freshmanYear": freshmanYear,
     });
 
-    const header = "date,num_checkins,num_checkouts,checkout_rate_percent\n";
+    const header = "date,num_checkins,num_checkouts,checkout_rate_percent,num_freshmen,num_sophomores,num_juniors,num_seniors\n";
     return header + meetingsResult.map((row) =>
-        `${row.date},${row.numCheckins},${row.numCheckouts},${row.checkoutRatePercent.toFixed(2)}%\n`
+        `${row.date},${row.numCheckins},${row.numCheckouts},${row.checkoutRatePercent.toFixed(2)}%,${row.numFreshmen},${row.numSophomores},${row.numJuniors},${row.numSeniors}\n`
     ).join("");
 }
 

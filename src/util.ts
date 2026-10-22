@@ -23,3 +23,11 @@ export function getToday() {
     const date = new Date(Date.now() - tzOffset);
     return date.toISOString().split("T")[0];
 }
+
+export function getCurrentGraduationYears() {
+    const tzOffset = (new Date()).getTimezoneOffset() * 60000;
+    const date = new Date(Date.now() - tzOffset);
+    const year = date.getFullYear();
+    const firstYear = date.getMonth() < 8 ? year : year + 1;
+    return [firstYear, firstYear + 1, firstYear + 2, firstYear + 3];
+}
