@@ -15,7 +15,7 @@ export default function App() {
     const [promptText, setPromptText] = useState(PROMPT_SCAN);
     const [exportModalOpen, setExportModalOpen] = useState(false);
     const [hasFocus, setHasFocus] = useState(false);
-    const [enabledActions, setEnabledActions] = useState({
+    const [enabledActions, setEnabledActions] = useState<EnabledActions>({
         sendToSlack: false,
         syncToMyPulse: false,
         sendReportEmail: false,

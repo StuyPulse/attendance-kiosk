@@ -5,12 +5,22 @@ import { Database } from "sqlite";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getTimestampedFilename } from "./util";
 
-export async function backupDBToS3(db: Database) {
+type BackupS3Client = {
+    send: (command: PutObjectCommand) => Promise<unknown>;
+};
+
+type BackupDeps = {
+    tmpBackupPath?: string;
+    createS3Client?: (region: string) => BackupS3Client;
+    getFilename?: (prefix: string, extension: string) => string;
+};
+
+export async function backupDBToS3(db: Database, deps: BackupDeps = {}) {
     if (!process.env.AWS_REGION || !process.env.BACKUP_S3_BUCKET) {
         throw new Error("Missing required environment variables for S3 backup");
     }
 
-    const tmpBackupPath = "/tmp/attendance-kiosk-data-backup.db";
+    const tmpBackupPath = deps.tmpBackupPath ?? "/tmp/attendance-kiosk-data-backup.db";
 
     try {
         await fs.promises.unlink(tmpBackupPath);
@@ -25,10 +35,12 @@ export async function backupDBToS3(db: Database) {
     const gzip = createGzip();
     const gzippedDB = await buffer(dbStream.pipe(gzip));
 
-    const client = new S3Client({ region: process.env.AWS_REGION });
+    const client = deps.createS3Client
+        ? deps.createS3Client(process.env.AWS_REGION)
+        : new S3Client({ region: process.env.AWS_REGION });
     const bucketName = process.env.BACKUP_S3_BUCKET;
     const prefix = process.env.BACKUP_S3_PREFIX || "";
-    const filename = getTimestampedFilename("data", "db.gz");
+    const filename = (deps.getFilename ?? getTimestampedFilename)("data", "db.gz");
 
     const command = new PutObjectCommand({
         Bucket: bucketName,
