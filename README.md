@@ -29,9 +29,11 @@ forgot if they already swiped in and swiped in again) from bringing down the stu
 
 Students are stored in the database using their unique 9-digit ID number, but their names can be imported using a .csv file. It should follow the provided format below, including the necessary header.
 
-    id_number,first_name,last_name
-    123456789,John,Doe
-    694694694,Jane,Doe
+    id_number,first_name,last_name,graduation_year
+    123456789,John,Doe,2027
+    694694694,Jane,Doe,2028
+
+The `graduation_year` field is optional, and the column can be omitted entirely from the CSV if desired.
 
 ## Development
 

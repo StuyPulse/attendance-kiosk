@@ -287,7 +287,7 @@ const createWindow = async () => {
                 const idNumber = record.id_number.trim();
                 const firstName = record.first_name.trim();
                 const lastName = record.last_name.trim();
-                const graduationYear = parseInt(record.graduation_year.trim()) || null;
+                const graduationYear = parseInt(record.graduation_year?.trim()) || null;
 
                 if (idNumber.length !== 9 || !firstName || !lastName) {
                     numFailure++;
