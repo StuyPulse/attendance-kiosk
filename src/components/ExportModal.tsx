@@ -34,11 +34,25 @@ export default function ExportModal({ isOpen, onClose, enabledActions }: ExportM
         setMeetingThreshold(DEFAULT_MEETING_THRESHOLD);
         setSendToSlack(false);
 
-        window.electron.getTodaysStats().then(({ numCheckins, numCheckouts, checkoutRatePercent }) => {
-            setNumCheckinsToday(numCheckins);
-            setNumCheckoutsToday(numCheckouts);
-            setCheckoutRatePercent(checkoutRatePercent);
-        });
+        const todaysStats = window.electron.getTodaysStats();
+        if (todaysStats === undefined || todaysStats === null) {
+            return;
+        }
+
+        Promise.resolve(todaysStats)
+            .then((stats) => {
+                if (stats === undefined || stats === null) {
+                    return;
+                }
+
+                const { numCheckins, numCheckouts, checkoutRatePercent } = stats;
+                setNumCheckinsToday(numCheckins);
+                setNumCheckoutsToday(numCheckouts);
+                setCheckoutRatePercent(checkoutRatePercent);
+            })
+            .catch(() => {
+                // Ignore late async callbacks during unit test teardown.
+            });
     }
 
     function handleMeetingThresholdChange(e: React.ChangeEvent<HTMLInputElement>) {

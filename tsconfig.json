@@ -11,10 +11,11 @@
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
     "paths": {
       "*": ["node_modules/*"]
     },
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*", "assets/**/*"]
+  "include": ["src/**/*", "assets/**/*", "test/**/*"]
 }

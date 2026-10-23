@@ -14,9 +14,13 @@
     "build": "docker run -v .:/code -w /code2 -it node:22 /code/scripts/build.sh",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "test": "node -r ts-node/register/transpile-only --test test/**/*.test.ts"
+    "test": "node -r ts-node/register/transpile-only --test test/**/*.test.ts",
+    "test:ui": "vitest run"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@electron-forge/cli": "^7.4.0",
     "@electron-forge/maker-deb": "^7.4.0",
     "@electron-forge/maker-rpm": "^7.4.0",
@@ -41,7 +45,10 @@
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
-    "typescript": "~4.5.4"
+    "typescript": "~4.5.4",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8",
+    "jsdom": "^25.0.1"
   },
   "keywords": [],
   "author": {
