@@ -61,8 +61,19 @@ describe("App", () => {
         expect(container.querySelector(".footer")?.className).toContain("error");
     });
 
-    it("disables form activity while export modal is open", () => {
+    it("disables form activity while export modal is open", async () => {
+        window.electron.getEnabledActions = vi.fn().mockResolvedValue({
+            sendToSlack: true,
+            syncToMyPulse: false,
+            sendReportEmail: false,
+            backupDBToS3: false,
+        });
+
         render(<App />);
+
+        await waitFor(() => {
+            expect(screen.getByTestId("export-modal").textContent).toContain("slack=true");
+        });
 
         expect(screen.getByTestId("form-active").textContent).toBe("true");
         fireEvent.click(screen.getByText("open export modal"));

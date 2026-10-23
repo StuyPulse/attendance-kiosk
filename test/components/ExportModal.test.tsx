@@ -1,5 +1,29 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { ReactNode, useEffect } from "react";
 import { describe, expect, it, vi } from "vitest";
+
+vi.mock("react-modal", () => {
+    const Modal = ({
+        isOpen,
+        onAfterOpen,
+        children,
+    }: {
+        isOpen: boolean;
+        onAfterOpen?: () => void;
+        children: ReactNode;
+    }) => {
+        useEffect(() => {
+            if (isOpen && onAfterOpen) {
+                onAfterOpen();
+            }
+        }, [isOpen, onAfterOpen]);
+
+        return isOpen ? <div>{children}</div> : null;
+    };
+
+    (Modal as unknown as { setAppElement: () => void }).setAppElement = vi.fn();
+    return { default: Modal };
+});
 
 import ExportModal from "../../src/components/ExportModal";
 import { getStartDate, getToday } from "../../src/util";
